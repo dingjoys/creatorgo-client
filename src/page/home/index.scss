@@ -1,0 +1,210 @@
+@import '@/global.scss';
+.sub-home-layout-wrapper {
+    display: flex;
+    justify-content: center;
+
+    .sub-home-layout {
+        position: relative;
+        color: white;
+        width: 100%;
+        min-width: 500px;
+        max-width: 1312px;
+        flex: 1;
+        // padding: 0 32px;
+        padding-bottom: 24px;
+        // overflow-x: hidden;
+
+        // .main-button { // 给需要的按钮单独写
+        //     // border:1px solid #424242;
+        //     background: linear-gradient(106deg, #634fff 29.66%, #ff5f5f 113.07%);
+        //     height: 48px;
+        //     border-radius: 24px;
+        //     position: relative;
+        //     overflow: visible;
+        //     &:hover {
+        //         background: linear-gradient(106.31deg, #634fff 29.66%, #ff5f5f 113.07%);
+        //     }
+        //     // border: 1px solid;
+        //     // border-image-source: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(116, 118, 130, 0.4) 42.5%, rgba(15, 17, 30, 0.4) 100%);
+
+        //     // &::before {
+        //     //     // border: 1px solid;
+        //     //     // border-image-source:
+        //     //     @include colorfulBorderProperties(
+        //     //         1px,
+        //     //         linear-gradient(
+        //     //             180deg,
+        //     //             rgba(255, 255, 255, 0.4) 0%,
+        //     //             rgba(116, 118, 130, 0.4) 42.5%,
+        //     //             rgba(15, 17, 30, 0.4) 100%
+        //     //         )
+        //     //     );
+        //     // }
+        // }
+
+        .search-filter {
+            display: flex;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+            // margin-bottom: 24px;
+            .filter-wrap {
+                .sub-home-select {
+                    height: 40px;
+                    width: 240px;
+                    padding: 0px 16px;
+                    border: 1px solid rgba(125, 128, 154, 0.4);
+                    border-radius: 8px;
+                    display: inline-flex;
+                    align-items: center;
+                    font-size: 14px;
+                    &.highlight,
+                    &:hover {
+                        border: 1px solid rgba(125, 128, 154, 1);
+                    }
+                }
+            }
+            .search-wrap {
+                flex: 1;
+            }
+        }
+
+        .icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        // .content-container {
+        //     position: relative;
+        //     .loading {
+        //         position: absolute !important;
+        //         left: 50%;
+        //         margin-left: -20px;
+        //         bottom: 40px;
+        //     }
+        // }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px 24px;
+            padding: 20px 0px;
+        }
+
+        .info-tag {
+            font-family: 'Montserrat';
+            border: 1px solid rgba(125, 128, 154, 0.4);
+            border-radius: 4px;
+            font-size: 12px;
+            display: flex;
+            height: 30px;
+            max-width: 80px;
+            align-items: center;
+            padding: 0px 4px;
+            min-width: 50px;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            position: relative;
+
+            .info {
+                padding-top: 1px;
+            }
+
+            .dot {
+                position: absolute;
+                right: -3px;
+                top: -3px;
+                display: block;
+                width: 6px;
+                height: 6px;
+                background: #e8514c;
+                border-radius: 50%;
+            }
+        }
+
+        .display-container {
+            min-height: 380px;
+            display: flex;
+            // overflow: hidden;
+            // background: #0a0f1c;
+            position: relative;
+            z-index: 0;
+
+            .left-info {
+                padding-top: 80px;
+                height: 100%;
+                width: 56%;
+                margin-bottom: 40px;
+                z-index: 2;
+                .title {
+                    font-size: 64px;
+                    font-size: 48px;
+                    line-height: 150%;
+                    font-weight: 600;
+                    font-family: 'Montserrat';
+                    white-space: nowrap;
+                    overflow: visible;
+                }
+
+                .title1 {
+                    font-size: 20px;
+                    line-height: 150%;
+                    margin: 10px 0px;
+                    font-family: 'Poppins';
+                    opacity: 0.8;
+                    font-weight: 300;
+                }
+            }
+            .img-info {
+                position: absolute;
+                width: 44%;
+                left: 55%;
+                z-index: 0;
+                img {
+                    margin-top: -100px;
+                    margin-left: -60px;
+                }
+
+                video {
+                    margin-top: -40px;
+                    width: 100%;
+                }
+            }
+        }
+
+        .tab-menu {
+            display: inline-flex;
+            padding: 4px;
+            align-items: flex-start;
+            gap: 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(125, 128, 154, 0.4);
+            background: var(--color-, #0c0c10);
+            height: 42px;
+
+            .tab-menuitem {
+                border-radius: 4px;
+                display: flex;
+                padding: 5px 8px;
+                justify-content: center;
+                align-items: center;
+                gap: 4px;
+                color: rgba(255, 255, 255, 0.8);
+
+                /* 副内文/常规 */
+                font-family: Poppins;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 22px; /* 157.143% */
+                cursor: pointer;
+                position: relative;
+                &.active {
+                    font-weight: 600;
+                    @include colorfulBg();
+                }
+            }
+        }
+    }
+}

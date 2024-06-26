@@ -1,0 +1,317 @@
+@import '@/global.scss';
+
+.artela-page {
+    .bg-video {
+        position: absolute;
+        z-index: -1;
+    }
+    &.is-mobile {
+        > .artela-page-1 {
+            // background-image: url('https://oss.metopia.xyz/imgs/20240615-152533.mp4');
+            // background-image: url('https://oss.metopia.xyz/imgs/vote/vote-part1-bg-mobile.png');
+            // background-size: 100%, 445rem;
+            // padding-top: 0rem;
+            // mask-image: linear-gradient(180deg, #d9d9d9 80%, rgba(115, 115, 115, 0) 100%);
+
+            background: rgba(0, 0, 0, 0.6);
+            .artela-page-middle {
+                margin-bottom: 40rem;
+                .apm-title {
+                    font-size: 32rem;
+                    width: 343rem;
+                }
+                .apm-desc {
+                    width: 343rem;
+                    font-size: 16rem;
+                    @include ellipsis(3);
+                }
+                .apm-actions {
+                    gap: 12rem;
+                    margin-top: 24rem;
+                    .apm-action-domain,
+                    .apm-action-social {
+                        width: 40rem;
+                        height: 40rem;
+                        svg {
+                            width: 24rem;
+                            height: 24rem;
+                        }
+                    }
+                }
+            }
+        }
+        > .artela-page-2 {
+            padding: 0 16rem;
+            padding-top: 32rem;
+            .ap2-container {
+                width: 100%;
+                min-width: 0;
+            }
+            .lp2-tab-menu {
+                gap: 32rem;
+                margin: 4rem 0;
+                padding: 20rem 0;
+                top: 44rem;
+            }
+            .ap2-title {
+                font-size: 24rem;
+            }
+            .ap2-card-ul {
+                grid-template-columns: 1fr;
+                .ap2-card-li {
+                    padding: 16rem;
+                    .ap2-card-li-title {
+                        font-size: 20rem;
+                    }
+                    .ap2-card-li-desc {
+                        font-size: 14rem;
+                        margin-top: 4rem;
+                    }
+                    .ap2-card-li-footer {
+                        font-size: 12rem;
+                        margin-top: 16rem;
+                    }
+                }
+            }
+        }
+    }
+    .artela-page-1 {
+        background: url('https://oss.metopia.xyz/imgs/creatorgo/home-bg.png');
+        background-repeat: no-repeat;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        padding-top: 80px;
+        height: 1040px;
+        position: relative;
+        mask-image: linear-gradient(180deg, #d9d9d9 65%, rgba(115, 115, 115, 0) 100%);
+        mask-repeat: no-repeat;
+        overflow: hidden;
+    }
+    .artela-page-middle {
+        margin-top: 284px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .apm-title {
+            color: #f0f0f0;
+            font-family: Melodrama;
+            font-size: 72px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 120%;
+            // width: 668px;
+        }
+        .apm-mint {
+            margin-top: 32px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            font-family: Poppins;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 150%; /* 30px */
+            .apm-mint-btn {
+                border: 1px solid #fff;
+                display: flex;
+                height: 40px;
+                padding: 8px 12px;
+                justify-content: center;
+                align-items: center;
+                gap: 8px;
+                color: #fff;
+                font-family: Poppins;
+                font-size: 20px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 24px; /* 120% */
+                cursor: pointer;
+                &:hover {
+                    color: #fbec50;
+                }
+            }
+        }
+    }
+
+    .artela-page-2 {
+        border-top: 1px solid rgba(255, 255, 255, 0.16);
+        padding-top: 48px;
+        text-align: center;
+        .ap2-container {
+            margin: 0 auto;
+            width: 100%;
+            max-width: 1312px;
+            min-width: 1024px;
+            text-align: left;
+        }
+        .ap2-search {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+            &.highlight,
+            &:focus {
+                border-color: #fff;
+            }
+            .ap2-search-input {
+                flex: 1;
+                width: auto;
+                height: 20px;
+                caret-color: #fbec50;
+
+                background: transparent;
+                color: #fff;
+                border: 0;
+                outline: 0;
+                font-size: 20px;
+                font-weight: 400;
+                font-family: Poppins;
+                line-height: 24px; /* 120% */
+            }
+        }
+        .ap2-list {
+            margin: 0;
+            padding: 0;
+            .ap2-list-item {
+                display: flex;
+                justify-content: space-between;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+                margin-top: 32px;
+                &:first-child {
+                    margin-top: 40px;
+                }
+                .ap2-list-item-right {
+                    align-self: flex-end;
+                    position: relative;
+                    height: 144px;
+                    .ap2-right-img {
+                        width: 144px;
+                        height: 144px;
+                    }
+                }
+            }
+            .ap2-image-modal {
+                position: absolute;
+                width: 480px;
+                height: 480px;
+                top: 0;
+                left: -496px;
+                flex-shrink: 0;
+                overflow: hidden;
+                border: 1px solid rgba(255, 255, 255, 0.25);
+
+                background: #000;
+                .ap2-image-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                    align-items: center;
+                    animation: scrolldown 10s linear infinite;
+                    &:hover {
+                        animation-play-state: paused;
+                    }
+                    @keyframes scrolldown {
+                        0% {
+                            transform: translateY(-100%);
+                        }
+                        100% {
+                            transform: translateY(0);
+                        }
+                    }
+                }
+                .ap2-image-modal-img {
+                    width: 400px;
+                }
+            }
+            .ap2-profile-card {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .ap2-avatar-container {
+                position: relative;
+                height: 32px;
+            }
+            .ap2-profile-left {
+                display: flex;
+                align-items: flex-start;
+                height: 32px;
+                .ap2-avatar-rank {
+                    width: 20px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 20px;
+                    flex-shrink: 0;
+                    color: #000;
+                    text-align: center;
+                    font-family: Poppins;
+                    font-size: 14px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: 100%; /* 14px */
+                    background: #fbec50;
+                }
+            }
+            .ap2-social-image {
+                position: absolute;
+                width: 12px;
+                height: 12px;
+                bottom: 0;
+                right: 0;
+            }
+            .ap2-avatar-image {
+                width: 32px;
+                height: 32px;
+            }
+            .ap2-profile-name {
+                color: #fff;
+                margin: 0;
+                align-self: stretch;
+                font: 400 28px/150% Poppins, -apple-system, Roboto, Helvetica, sans-serif;
+            }
+            .ap2-profile-score {
+                color: #fbec50;
+                text-align: right;
+                margin: 0;
+                align-self: stretch;
+                margin: auto 0;
+                font: 700 24px/24px Melodrama, -apple-system, Roboto, Helvetica, sans-serif;
+            }
+            .ap2-score-value {
+                text-decoration: underline;
+            }
+            .ap2-stats-container {
+                margin-left: 64px;
+                margin-top: 48px;
+                display: flex;
+                gap: 12px;
+                font-weight: 400;
+                justify-content: space-between;
+            }
+
+            .ap2-stat-item {
+                display: flex;
+                padding-right: 20px;
+                align-items: center;
+                gap: 8px;
+                white-space: nowrap;
+            }
+
+            .ap2-stat-label {
+                color: rgba(255, 255, 255, 0.6);
+                font: 14px/157% Poppins, sans-serif;
+            }
+            .ap2-stat-value {
+                color: #fff;
+                text-align: right;
+                font: 16px/150% Poppins, sans-serif;
+            }
+        }
+    }
+}

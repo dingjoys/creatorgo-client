@@ -1,0 +1,141 @@
+$title-color: #ffffff;
+$text-color: #ffffff;
+$subtitle-color: #dddddd;
+$tier2-color: #7d809a;
+
+$border-color: #7d809a;
+// $border-color: #575861;
+$border-color-light: #ececec;
+$theme-color: #a480ff;
+$error-color: #e8514c;
+$card-color-1: #171821;
+$card-color-2: #1e202b;
+$card-color-3: #2f3141;
+$background-color: #000;
+
+$default-border: 1px solid $border-color;
+
+@mixin clickable {
+    position: relative;
+    user-select: none;
+    cursor: pointer;
+
+    &:hover {
+        &::after {
+            content: '';
+            z-index: 1;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: inherit;
+        }
+    }
+}
+
+@mixin scrollbar {
+    ::-webkit-scrollbar {
+        width: 1px;
+        /*高宽分别对应横竖滚动条的尺寸*/
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background: #7d809a;
+    }
+
+    ::-webkit-scrollbar-track {
+        border-radius: 10px;
+
+        background: transparent;
+    }
+}
+
+@mixin absolute-centered {
+    position: absolute;
+    margin: auto;
+    left: -9999px;
+    right: -9999px;
+    bottom: -9999px;
+    top: -9999px;
+}
+
+@mixin flex-centered-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@mixin ellipsis($line) {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $line;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    @if $line==1 {
+        white-space: nowrap;
+    } @else {
+        display: -webkit-box;
+    }
+}
+$default-linear-color: linear-gradient(96deg, #1428ff 4.58%, #80b0ff 95.03%);
+@mixin colorful($color: $default-linear-color) {
+    background: $color;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+}
+$bg-linear-color: linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.3) 100%),
+    linear-gradient(96deg, #1428ff 4.58%, #80b0ff 95.03%);
+
+@mixin colorfulBg($color: $bg-linear-color) {
+    background: $color;
+    background-blend-mode: overlay, normal;
+}
+
+@mixin colorfulBorderProperties($width, $color: $default-linear-color) {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    margin: -$width;
+    border-radius: inherit;
+    transition: 300ms;
+    transition-timing-function: cubic-bezier(0.13, 0 0.66, 0.96, 0.67);
+    background: $color;
+}
+
+@mixin colorfulBorder($width, $color: $default-linear-color, $bg-color: $background-color) {
+    position: relative;
+    background: $color;
+    &::after {
+        content: '';
+        position: absolute;
+        top: $width;
+        right: $width;
+        bottom: $width;
+        left: $width;
+        z-index: 0;
+        border-radius: inherit;
+        background: $bg-color;
+    }
+}
+
+@keyframes breathe {
+    from {
+        opacity: 0.1;
+    }
+    50% {
+        opacity: 1;
+    }
+    to {
+        opacity: 0.1;
+    }
+}

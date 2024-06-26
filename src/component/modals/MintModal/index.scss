@@ -1,0 +1,102 @@
+@import '@/global.scss';
+
+.modal-vote {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 40px;
+    .close-icon-wrapper {
+        position: absolute;
+        right: -40px;
+        top: 0;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+    }
+    .modal-stats-container {
+        display: flex;
+        gap: 40px;
+        font-weight: 400;
+        margin-top: 48px;
+        width: 100%;
+    }
+    .modal-stats-column {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    .modal-stat-item {
+        justify-content: space-between;
+        display: flex;
+        gap: 8px;
+
+        white-space: nowrap;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .modal-stat-item:first-child {
+        margin-top: 0;
+    }
+    .modal-stat-label {
+        color: rgba(255, 255, 255, 0.6);
+        font: 14px/157% Poppins, sans-serif;
+    }
+    .modal-stat-value {
+        color: #fff;
+        text-align: right;
+        font: 16px/150% Poppins, sans-serif;
+    }
+
+    .modal-creator-score-container {
+        align-items: center;
+        display: flex;
+        max-width: 222px;
+        flex-direction: column;
+        font-weight: 400;
+        line-height: 150%;
+    }
+    .modal-profile-image {
+        aspect-ratio: 1;
+        object-fit: cover;
+        width: 64px;
+        border-radius: 50%;
+    }
+    .modal-score-title {
+        color: #fff;
+        margin-top: 32px;
+        margin-bottom: 0;
+        font: 20px Poppins, sans-serif;
+    }
+    .modal-score-value {
+        color: #fbec50;
+        width: 100%;
+        margin: 0;
+        font: 700 48px Melodrama, sans-serif;
+    }
+    .modal-update-time {
+        color: rgba(255, 255, 255, 0.6);
+        text-align: right;
+        margin: 0;
+        font: 14px/157% Poppins, sans-serif;
+    }
+    .modal-mint-btn {
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        margin-top: 64px;
+        display: flex;
+        width: 160px;
+        height: 40px;
+        padding: 8px 12px;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+        color: #fff;
+        font-family: Poppins;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px; /* 120% */
+        cursor: pointer;
+    }
+}

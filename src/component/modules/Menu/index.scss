@@ -1,0 +1,82 @@
+@import '@/global.scss';
+
+.menu-container {
+    position: fixed;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 100;
+    background: none;
+    box-sizing: border-box;
+    left: 0;
+    right: 0;
+    top: 0;
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(125, 128, 154, 0.15);
+
+    > .wrapper {
+        width: 100vw;
+        padding: 0 48px;
+    }
+    .menu-bar {
+        > .container {
+            height: 64px;
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            .account-info-container {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                .drop-down {
+                    position: absolute;
+                    top: 100%;
+                    right: 48px;
+                    z-index: 9999;
+                    display: none;
+                    width: 146px;
+
+                    .drop-down-content {
+                        width: 146px;
+                        height: 40px;
+                        flex-shrink: 0;
+                        padding: 8px 16px;
+                        border: 1px solid rgba(255, 255, 255, 0.25);
+                        background: rgba(255, 255, 255, 0.05);
+                        backdrop-filter: blur(16px);
+                        color: #fff;
+                        font-family: Poppins;
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 400;
+                        line-height: 24px; /* 150% */
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        cursor: pointer;
+                    }
+                }
+
+                &:hover .drop-down {
+                    display: block;
+                    font-size: 14px;
+                }
+            }
+            .connect-wallet-button {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                height: 64px;
+                cursor: pointer;
+                color: #fbec50;
+                font-family: Poppins;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 24px; /* 150% */
+            }
+        }
+    }
+}

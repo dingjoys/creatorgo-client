@@ -1,0 +1,250 @@
+@import '@/global.scss';
+
+.home-table-wrapper {
+    width: 100%;
+    border: 0;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+    margin-top: -12px;
+    text-align: left;
+    table-layout: fixed;
+    &.short-collapse {
+        border-spacing: 0 8px;
+    }
+
+    .home-table-th {
+        padding: 16px 8px;
+        padding-bottom: 8px;
+        font-family: 'Poppins';
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 22px;
+        vertical-align: middle;
+        color: #7d809a;
+        white-space: nowrap;
+        background: #fff;
+
+        &.text-center {
+            text-align: center;
+        }
+        &.text-right {
+            text-align: right;
+        }
+
+        > .sort-icon {
+            vertical-align: middle;
+            margin-left: 4px;
+            transition: all 0.3s;
+            @include clickable();
+
+            &.asc {
+                transform: rotate(180deg);
+            }
+        }
+
+        &.Centered {
+            text-align: center;
+        }
+    }
+    .home-table-header-sticky {
+        position: sticky;
+        top: 80px;
+        z-index: 10;
+        .home-table-th {
+            padding-bottom: 16px;
+        }
+    }
+    .home-table-tr {
+        width: 100%;
+        background: $card-color-1;
+        border-radius: 16px;
+        &.home-table-tr-disabled {
+            filter: brightness(0.5);
+        }
+        &.clickable {
+            cursor: pointer;
+        }
+
+        // @include clickable;
+        // &.status-end {
+        //     opacity: 0.6;
+        // }
+        // &:hover {
+        //     background: linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)), $card-color-1;
+        //     .link-arrow-icon {
+        //         fill: #fff;
+        //     }
+        // }
+        &:hover {
+            background: #eaeaea;
+        }
+        > .home-table-td {
+            font-family: 'Poppins';
+            border: 0;
+            line-height: 18px;
+            height: 72px;
+            padding: 11px 8px;
+            border-left: 0;
+            border-right: 0;
+            font-size: 14px;
+            max-width: 600px;
+            color: $text-color;
+            background: #fff;
+
+            &.text-center {
+                text-align: center;
+            }
+            &.text-right {
+                text-align: right;
+            }
+            &:first-child {
+                // border-left: 2px solid transparent;
+                // border-left-style: solid;
+                border-top-left-radius: 16px;
+                border-bottom-left-radius: 16px;
+                padding-left: 16px;
+            }
+
+            &:last-child {
+                // border-right: 2px solid transparent;
+                // border-right-style: solid;
+                border-bottom-right-radius: 16px;
+                border-top-right-radius: 16px;
+                padding-right: 16px;
+            }
+
+            .ellipsis-text {
+                max-width: 100%;
+                display: inline-block;
+                @include ellipsis(1);
+            }
+
+            &.bold-text,
+            .bold-text {
+                font-family: 'Poppins';
+                font-weight: 600;
+                font-size: 14px;
+                color: #ffffff;
+            }
+            .colorful-ranking {
+                background: linear-gradient(0.25turn, #bf80ff, #78d6ff, #8efa90);
+                background-clip: text;
+                -webkit-background-clip: text;
+                color: transparent;
+                font-size: 16px;
+                font-family: Poppins-EBI;
+                font-weight: 700;
+                line-height: 24px;
+                font-style: italic;
+            }
+
+            .ranking-text {
+                color: #7d809a;
+            }
+
+            &.Centered {
+                text-align: center;
+            }
+
+            &.Nowrap {
+                white-space: nowrap;
+            }
+            .active-bold-text {
+                color: $theme-color;
+                /* 副内文/加粗 */
+                font-family: Poppins;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: 22px; /* 157.143% */
+            }
+        }
+        .cursor-pointer {
+            cursor: pointer;
+        }
+    }
+    .home-table-expand-tr {
+        position: relative;
+        top: -16px;
+        // height: 26px;
+        width: 100%;
+        display: none;
+        &.show-expand {
+            display: table-row;
+        }
+        .home-table-expand-td-box {
+            display: flex;
+            margin: 0 32px;
+            z-index: -1;
+            background-color: #2f3141;
+            justify-content: center;
+            align-items: center;
+            color: #7d809a;
+            font-family: Poppins;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            height: 26px; /* 100% */
+            border-radius: 16px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            cursor: pointer;
+
+            > .home-table-expand-td-arrow {
+                width: 16px;
+                height: 16px;
+                transform: rotate(90deg);
+                margin-left: 4px;
+                &.expanded {
+                    transform: rotate(-90deg);
+                }
+            }
+        }
+    }
+
+    &.home-table-v2 {
+        border-radius: 24px;
+        background: var(--color-, #0c0c10);
+        backdrop-filter: blur(20px);
+        // border-collapse: collapse;
+        border-spacing: 0px;
+        padding: 0px;
+        table-layout: initial;
+        &.home-table-is-mobile {
+            .home-table-th {
+                font-size: 14rem;
+                padding: 16rem 8rem;
+                font-weight: 600;
+            }
+            .home-table-tr {
+                .home-table-td {
+                    font-size: 14rem;
+                    color: $text-color;
+                    font-weight: 600;
+                    line-height: 22rem;
+                    padding: 8rem;
+                }
+            }
+        }
+        .home-table-th {
+            color: var(--color-disable, $tier2-color);
+            font-family: Poppins;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 14px; /* 157.143% */
+            padding: 24px 12px;
+        }
+        .home-table-tr {
+            width: 100%;
+            background: transparent; //$card-color-1;
+
+            // cursor: pointer;
+            .home-table-td {
+                height: auto;
+                font-weight: 600;
+                padding: 12px;
+            }
+        }
+    }
+}

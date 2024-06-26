@@ -1,0 +1,122 @@
+@import '@/global.scss';
+.alert-modal-container {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 32px 32px 24px 32px;
+    background: $card-color-1;
+    font-family: Poppins;
+
+    > .title {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+
+        > .text {
+            font-family: 'Montserrat';
+            font-size: 24px;
+            transform: translateY(2px);
+            line-height: 48px;
+        }
+
+        .icon-alert {
+            font-size: 40px;
+
+            &::before {
+                color: #7d809a;
+            }
+        }
+    }
+
+    > .body {
+        font-size: 16px;
+        margin-top: 12px;
+        line-height: 150%;
+        margin-top: 2px;
+        opacity: 0.8;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+
+        .main-button {
+            font-size: 15px;
+            width: 120px;
+            height: 36px;
+            font-weight: bold;
+        }
+    }
+
+    &.warning {
+        > .title {
+            img {
+                display: block;
+            }
+
+            > .text {
+                font-size: 24px;
+            }
+        }
+
+        > .body {
+            padding-left: 58px;
+            // margin-top: 0;
+        }
+    }
+}
+
+.Toastify {
+    .Toastify__toast-container {
+    }
+    z-index: 9999999;
+    position: absolute;
+}
+
+.r-toast {
+    border-radius: 16px;
+    border: 1px solid rgba(125, 128, 154, 0.6);
+    background: var(--color-1, #171821) !important;
+    box-shadow: 0px 16px 32px 0px rgba(0, 0, 0, 0.6);
+    padding: 16px;
+    .r-toast-body {
+        font-size: 16px;
+        line-height: 150%;
+        font-weight: 600;
+        color: #ffffff;
+        padding: 0;
+        align-items: flex-start;
+
+        .Toastify__toast-icon {
+            width: 32px;
+        }
+    }
+
+    .Toastify__toast-icon {
+        width: 32px;
+    }
+
+    .excl {
+        transform: translate(-3px, -3px);
+    }
+}
+
+.toast-title {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 150%;
+    color: #ffffff;
+}
+
+.toast-content {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 150%;
+    color: #7d809a;
+}

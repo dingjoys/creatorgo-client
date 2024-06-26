@@ -1,0 +1,10 @@
+$c: 150;
+@keyframes loading-dash {
+    0% {
+        stroke-dasharray: 0, $c;
+    }
+
+    100% {
+        stroke-dasharray: calc(0.9 * $c), $c;
+    }
+}
