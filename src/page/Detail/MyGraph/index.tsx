@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import RelationGraph, { RelationGraphInstance } from 'relation-graph-react';
 import type { MutableRefObject } from 'react';
+import { Tooltip } from 'react-tooltip';
 import type {
     RGLine,
     RGLink,
@@ -102,6 +103,8 @@ const NodeSlot: React.FC<RGNodeSlotProps> = ({ node }) => {
         />
     ) : (
         <div
+            data-tooltip-id="my-graph"
+            data-tooltip-html={`<div>${node.text}</div>`}
             style={{
                 display: 'inline-flex',
                 height: '32px',
@@ -176,6 +179,7 @@ const MyGraph: React.FC = () => {
                     onLineClick={onLineClick}
                 />
             </div>
+            <Tooltip id="my-graph" place="right" />
         </div>
     );
 };

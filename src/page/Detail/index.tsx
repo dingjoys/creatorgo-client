@@ -1,6 +1,8 @@
 import { ReactNode, useEffect, useState } from 'react';
 import './index.scss';
 import { ReactComponent as IconClose } from '@/component/icons/svg/close-border.svg';
+import { ReactComponent as IconBadge1 } from '@/component/icons/svg/badge1.svg';
+import { ReactComponent as IconBadge2 } from '@/component/icons/svg/badge2.svg';
 import MyGraph from './MyGraph';
 import { useParams } from 'react-router-dom';
 
@@ -37,50 +39,57 @@ export default function Detail() {
         {
             avatarSrc: defaultAvatar,
             username: 'beninem',
-            badges: [defaultAvatar, defaultAvatar],
+            isBadge1: true,
+            isBadge2: true,
             itemCount: 1203,
             hasFarcaster: true,
         },
         {
             avatarSrc: defaultAvatar,
             username: 'beninem',
-            badges: [defaultAvatar, defaultAvatar],
             itemCount: 1203,
+            isBadge1: false,
+            isBadge2: false,
             hasFarcaster: true,
         },
         {
             avatarSrc: defaultAvatar,
             username: 'beninem',
-            badges: [defaultAvatar, defaultAvatar],
             itemCount: 1203,
+            isBadge1: true,
+            isBadge2: false,
             hasFarcaster: true,
         },
         {
             avatarSrc: defaultAvatar,
             username: 'beninem',
-            badges: [defaultAvatar, defaultAvatar],
             itemCount: 1203,
+            isBadge1: true,
+            isBadge2: false,
             hasFarcaster: true,
         },
         {
             avatarSrc: defaultAvatar,
             username: 'beninem',
-            badges: [defaultAvatar, defaultAvatar],
             itemCount: 1203,
+            isBadge1: true,
+            isBadge2: true,
             hasFarcaster: true,
         },
         {
             avatarSrc: defaultAvatar,
             username: 'beninem',
-            badges: [defaultAvatar, defaultAvatar],
             itemCount: 1203,
+            isBadge1: false,
+            isBadge2: true,
             hasFarcaster: true,
         },
         {
             avatarSrc: defaultAvatar,
             username: 'beninem',
-            badges: [defaultAvatar, defaultAvatar],
             itemCount: 1203,
+            isBadge1: true,
+            isBadge2: true,
             hasFarcaster: true,
         },
     ];
@@ -271,7 +280,8 @@ export default function Detail() {
                                         key={index}
                                         avatarSrc={item.avatarSrc}
                                         username={item.username}
-                                        badges={item.badges}
+                                        isBadge1={item.isBadge1}
+                                        isBadge2={item.isBadge2}
                                         itemCount={item.itemCount}
                                     />
                                 ))}
@@ -287,6 +297,7 @@ export default function Detail() {
                         </div>
                     </div>
                     <div className="detail-chart">
+                        <div className="dc-title">Creator onchain trajectory</div>
                         <MyGraph />
                     </div>
                 </div>
@@ -399,11 +410,18 @@ const IconButton: React.FC<{ src: string; alt: string }> = ({ src, alt }) => (
 interface ProfileProps {
     avatarSrc: string;
     username: string;
-    badges: string[];
+    isBadge1: boolean;
+    isBadge2: boolean;
     itemCount: number;
 }
 
-const Profile: React.FC<ProfileProps> = ({ avatarSrc, username, badges, itemCount }) => {
+const Profile: React.FC<ProfileProps> = ({
+    avatarSrc,
+    username,
+    isBadge1,
+    isBadge2,
+    itemCount,
+}) => {
     return (
         <>
             <div className="detail-profile-container">
@@ -417,15 +435,8 @@ const Profile: React.FC<ProfileProps> = ({ avatarSrc, username, badges, itemCoun
                     <div className="detail-username-container">
                         <div className="detail-username">{username}</div>
                         <div className="detail-badge-container">
-                            {badges.map((badge, index) => (
-                                <img
-                                    loading="lazy"
-                                    key={index}
-                                    src={badge}
-                                    alt={''}
-                                    className="detail-badge"
-                                />
-                            ))}
+                            {isBadge1 ? <IconBadge1 className="detail-badge" /> : null}
+                            {isBadge2 ? <IconBadge2 className="detail-badge" /> : null}
                         </div>
                     </div>
                 </div>

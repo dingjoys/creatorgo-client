@@ -33,6 +33,7 @@
         display: flex;
         justify-content: space-between;
         gap: 160px;
+        width: 100%;
         .detail-info {
             width: 640px;
             padding-bottom: 40px;
@@ -42,7 +43,18 @@
         .detail-chart {
             flex: none;
             width: 720px;
-            height: 750px;
+            .dc-title {
+                display: flex;
+                justify-content: center;
+                color: #f0f0f0;
+                text-align: center;
+                font-family: Melodrama;
+                font-size: 40px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: 120%; /* 48px */
+                margin-bottom: 32px;
+            }
         }
         .di-user {
             display: flex;
@@ -367,6 +379,8 @@
         .detail-gallery-title {
             font-family: Poppins, sans-serif;
             margin-top: 4px;
+            width: 88px;
+            @include ellipsis(1);
         }
     }
     .detail-collection-list {
