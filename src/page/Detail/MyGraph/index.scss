@@ -1,0 +1,13 @@
+.my-graph {
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    height: 750px;
+    // overflow: hidden;
+    background: rgba(217, 217, 217, 0.01);
+
+    .my-graph-box {
+        background: url('https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/creatorgo/detail-chart-bg.png');
+        background-repeat: no-repeat;
+        background-size: cover;
+        height: 750px;
+    }
+}

@@ -1,5 +1,8 @@
 import { ReactNode, useEffect, useState } from 'react';
 import './index.scss';
+import { ReactComponent as IconClose } from '@/component/icons/svg/close-border.svg';
+import MyGraph from './MyGraph';
+import { useParams } from 'react-router-dom';
 
 const defaultAvatar =
     'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png';
@@ -120,34 +123,30 @@ export default function Detail() {
         },
     ];
 
-    const galleryData: GalleryItemProps[] = [
+    const galleryData = [
         {
             src: defaultAvatar,
-            alt: 'GENSON01 image',
             title: 'GENSON01',
         },
         {
             src: defaultAvatar,
-            alt: 'Ruins at rest image',
             title: 'Ruins at rest',
         },
         {
             src: defaultAvatar,
-            alt: 'The spaces a... image',
             title: 'The spaces a...',
         },
         {
             src: defaultAvatar,
-            alt: 'masonry image',
             title: 'masonry',
         },
         {
             src: defaultAvatar,
-            alt: 'enjoy arrow image',
             title: 'enjoy arrow',
         },
     ];
 
+    const [selectedGallery, setselectedGallery] = useState('');
     const galleryImages = [
         {
             image: defaultAvatar,
@@ -166,7 +165,7 @@ export default function Detail() {
             mintedCount: 2323,
         },
     ];
-
+    console.log('selectedGallery', selectedGallery);
     return (
         <div className="detail-wrapper">
             <div className="detail-side-bar">
@@ -205,8 +204,18 @@ export default function Detail() {
                                         <div className="diu-profile-actions">
                                             <button className="diu-follow-button">Follow</button>
 
-                                            <IconButton src={defaultAvatar} alt="First action" />
-                                            <IconButton src={defaultAvatar} alt="Second action" />
+                                            <IconButton
+                                                src={
+                                                    'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/creatorgo/farcaster.png'
+                                                }
+                                                alt="First action"
+                                            />
+                                            <IconButton
+                                                src={
+                                                    'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/creatorgo/twitter.png'
+                                                }
+                                                alt="Second action"
+                                            />
                                         </div>
                                     </div>
 
@@ -277,13 +286,24 @@ export default function Detail() {
                             </section>
                         </div>
                     </div>
-                    <div className="detail-chart"></div>
+                    <div className="detail-chart">
+                        <MyGraph />
+                    </div>
                 </div>
             ) : (
                 <div className="detail-collection">
                     <section className="detail-image-gallery">
                         {galleryData.map((item, index) => (
-                            <GalleryItem key={index} {...item} />
+                            <GalleryItem
+                                title={item.title}
+                                key={index}
+                                src={item.src}
+                                setSelected={(value) => {
+                                    console.log('3232', value);
+                                    setselectedGallery(value);
+                                }}
+                                isSelected={selectedGallery == item.title}
+                            />
                         ))}
                     </section>
                     <section className="detail-collection-list">
@@ -344,13 +364,29 @@ const Post: React.FC<PostProps> = ({
 };
 interface GalleryItemProps {
     src: string;
-    alt: string;
     title: string;
+    isSelected?: boolean;
+    setSelected: (key: string) => void;
 }
 
-const GalleryItem: React.FC<GalleryItemProps> = ({ src, alt, title }) => (
-    <div className="detail-gallery-item">
-        <img loading="lazy" src={src} alt={alt} className="detail-gallery-image" />
+const GalleryItem: React.FC<GalleryItemProps> = ({ src, title, isSelected, setSelected }) => (
+    <div
+        className={`detail-gallery-item ${isSelected ? 'is-selected' : ''}`}
+        onClick={() => {
+            setSelected(title);
+        }}
+    >
+        {isSelected ? (
+            <div className="dgi-close">
+                <IconClose
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setSelected('');
+                    }}
+                />
+            </div>
+        ) : null}
+        <img loading="lazy" src={src} alt={''} className="detail-gallery-image" />
         <div className="detail-gallery-title">{title}</div>
     </div>
 );
