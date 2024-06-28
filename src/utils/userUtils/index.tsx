@@ -1,95 +1,12 @@
-import SID, { getSidAddress } from '@siddomains/sidjs';
 import { ethers, utils } from 'ethers';
 import { useEffect, useState } from 'react';
 
-const Web3 = require('web3');
-
-export const getBaseName = async (address) => {
-    if (!address?.length) return null;
-
-    const baseName = localStorage.getItem(`bns-${address}`);
-    if (baseName?.length) {
-        if (baseName == 'null') return null;
-        else return baseName;
-    }
-
-    const provider = new ethers.providers.JsonRpcProvider('https://mainnet.base.org', {
-        name: 'Base Mainnet',
-        chainId: 8453,
-        ensAddress: '0xeCBaE6E54bAA669005b93342E5650d5886D54fc7', // bnsAddress mainnet
-    });
-
-    const name = await provider.lookupAddress(address);
-
-    if (name) {
-        localStorage.setItem(`bns-${address}`, name);
-        return name;
-    } else {
-        return null;
-    }
-};
-export const getSpaceId = async (address) => {
-    if (!address?.length) return null;
-
-    const spaceId = localStorage.getItem(`sid-${address}`);
-    if (spaceId?.length) {
-        if (spaceId == 'null') return null;
-        else return spaceId;
-    }
-
-    const rpc = 'https://bsc-dataseed2.binance.org';
-    const provider = new Web3.providers.HttpProvider(rpc);
-
-    const chainId = '56';
-    const sid = new SID({ provider, sidAddress: getSidAddress(chainId) });
-
-    const name = await sid.getName(address);
-    if (name.name) {
-        localStorage.setItem(`sid-${address}`, name.name);
-        return name.name;
-    } else {
-        return null;
-    }
-};
-
-/**
- * Usage:
- * getEnsNames([
- * '0xa729addefe1fa7bce87053ed55d55edddd13de60',
- * '0xcc719d0ef7c044543efd2686695ded5f24978cf3',
- * '0x0e555F9393C9BBd91096f8b8A3668ECF0375BeB4'
- * ])
- */
-
-export const getArb = async (address) => {
-    if (!address?.length) return null;
-
-    const arb = localStorage.getItem(`arb-${address}`);
-    if (arb?.length) {
-        if (arb == 'null') return null;
-        else return arb;
-    }
-
-    const rpc = 'https://arb1.arbitrum.io/rpc'; //Arbitrum One rpc
-    const provider = new Web3.providers.HttpProvider(rpc);
-    const chainId = 42161; //Arbitrum One chain id
-    const sid = new SID({ provider, sidAddress: getSidAddress(chainId) });
-
-    const res = await sid.getName(address);
-    if (res.name) {
-        localStorage.setItem(`arb-${address}`, res.name);
-        return res.name;
-    } else {
-        return null;
-    }
-};
 export const getEns = async (address) => {
     if (!address?.length) return null;
     const ens = localStorage.getItem(address);
 
-    if (ens?.length) {
-        if (ens == 'null') return null;
-        else return ens;
+    if (ens?.length && ens != 'null') {
+        return ens;
     }
     return await new ethers.providers.InfuraProvider('mainnet', 'caa2121f41a1419abae10b5f2e4aa367')
         .lookupAddress(address)
@@ -102,22 +19,28 @@ export const getEns = async (address) => {
         });
 };
 
+export async function getEnsAvatar(address) {
+    if (!address?.length) return null;
+    const ens = localStorage.getItem(`${address}__avatar`);
+
+    if (ens?.length && ens != 'null') {
+        return ens;
+    }
+    return await new ethers.providers.InfuraProvider('mainnet', 'caa2121f41a1419abae10b5f2e4aa367')
+        .getAvatar(address)
+        .then((e) => {
+            localStorage.setItem(`${address}__avatar`, e);
+        })
+        .catch((e) => {
+            console.error('e2,', e);
+            return null;
+        });
+}
+
 const localMap = {};
 export const getAdaptiveUsername = async (owner: string) => {
     if (localMap?.[owner]?.ens) {
         return localMap[owner].ens;
-    }
-    if (localMap?.[owner]?.spaceId) {
-        return localMap[owner].spaceId;
-    }
-    if (localMap?.[owner]?.base) {
-        return localMap[owner].base;
-    }
-    if (localMap?.[owner]?.bit) {
-        return localMap[owner].bit;
-    }
-    if (localMap?.[owner]?.arb) {
-        return localMap[owner].arb;
     }
 
     const ens = await getEns(owner);
@@ -128,27 +51,24 @@ export const getAdaptiveUsername = async (owner: string) => {
         return ens;
     }
 
-    const spaceId = await getSpaceId(owner);
-    if (spaceId) {
-        if (!localMap[owner]) localMap[owner] = {};
-        localMap[owner].spaceId = spaceId;
-        return spaceId;
-    }
-    const baseName = await getBaseName(owner);
-    if (baseName) {
-        if (!localMap[owner]) localMap[owner] = {};
-        localMap[owner].base = baseName;
-        return baseName;
-    }
-
-    const arb = await getArb(owner);
-    if (arb) {
-        if (!localMap[owner]) localMap[owner] = {};
-        localMap[owner].arb = arb;
-        return arb;
-    }
-
     return owner;
+};
+
+const localAvatarMap = {};
+export const getAdaptiveUserAvatar = async (owner: string) => {
+    if (localAvatarMap?.[owner]?.ens) {
+        return localAvatarMap[owner].ens;
+    }
+
+    const ens = await getEnsAvatar(owner);
+    console.log('dd, ', ens);
+    if (ens) {
+        if (!localAvatarMap[owner]) localAvatarMap[owner] = {};
+        localAvatarMap[owner].ens = ens;
+        return ens;
+    }
+
+    return '';
 };
 
 export function cutAddress(address: string, length: number) {

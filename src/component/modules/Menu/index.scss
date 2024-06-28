@@ -30,10 +30,24 @@
                 display: flex;
                 align-items: center;
                 gap: 12px;
+            }
+            .connect-wallet-button {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                height: 64px;
+                cursor: pointer;
+                color: #fbec50;
+                font-family: Poppins;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 24px; /* 150% */
+                position: relative;
                 .drop-down {
                     position: absolute;
                     top: 100%;
-                    right: 48px;
+                    right: 0px;
                     z-index: 9999;
                     display: none;
                     width: 146px;
@@ -64,18 +78,41 @@
                     font-size: 14px;
                 }
             }
-            .connect-wallet-button {
+            .menu-attest-value {
                 display: flex;
                 align-items: center;
-                gap: 4px;
-                height: 64px;
-                cursor: pointer;
+                gap: 8px;
                 color: #fbec50;
+                font-family: Melodrama;
+                font-size: 18px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: 24px;
+                .menu-attest-line {
+                    width: 16px;
+                    height: 1px;
+                    transform: rotate(15deg);
+                    background: rgba(251, 236, 80, 0.4);
+                }
+            }
+            .menu-attest-btn {
+                margin-left: 12px;
+                display: flex;
+                padding: 4px 12px;
+                justify-content: center;
+                align-items: center;
+                gap: 8px;
+                border: 1px solid #fff;
+                color: #fff;
+                &:hover {
+                    color: #fbec50;
+                }
                 font-family: Poppins;
                 font-size: 16px;
                 font-style: normal;
                 font-weight: 400;
                 line-height: 24px; /* 150% */
+                cursor: pointer;
             }
         }
     }

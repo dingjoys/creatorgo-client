@@ -15,7 +15,6 @@
         "@reduxjs/toolkit": "^1.7.1",
         "@self.id/framework": "^0.3.2",
         "@self.id/react": "^0.2.0",
-        "@siddomains/sidjs": "^0.1.17",
         "@svgr/webpack": "^6.2.1",
         "@tanstack/react-query": "^5.28.6",
         "@testing-library/jest-dom": "^5.16.1",

@@ -5,7 +5,7 @@ import Layout from './Layout';
 // page
 import { ScrollToTop } from '@/core/hooks/ScrollToTop';
 import HomePage from '@/page/home/HomePage';
-// import DetailPage from './page/Detail';
+import DetailPage from './page/Detail';
 
 function App() {
     return (
@@ -21,7 +21,7 @@ function App() {
                     }
                 >
                     <Route index element={<HomePage />}></Route>
-                    {/* <Route path="detail/:id" element={<DetailPage />}></Route> */}
+                    <Route path="detail/:id" element={<DetailPage />}></Route>
                     <Route path="*" element={<HomePage />}></Route>
                 </Route>
             </Routes>

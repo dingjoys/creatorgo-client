@@ -10,6 +10,7 @@ import { injected } from 'wagmi/connectors';
 import { reconnect } from '@wagmi/core';
 import { useDisconnect } from 'wagmi';
 import useIsMobile from '@/core/useMobile';
+import MintModal from '@/component/modals/MintModal';
 
 const projectLogoMap = {
     'gas-hero': 'https://oss.metopia.xyz/imgs/hero/logo.png',
@@ -32,6 +33,8 @@ const Menu = ({ project }) => {
     const projectLogo = useMemo(() => {
         return projectLogoMap[project] || 'https://oss.metopia.xyz/imgs/metopia-logo-text.png';
     }, [project]);
+    const [power, setPower] = useState(0);
+    const [isShowModal, setShowModal] = useState(false);
 
     return (
         <div className={`menu-container`}>
@@ -56,6 +59,7 @@ const Menu = ({ project }) => {
                                             <div className="connect-wallet-button">
                                                 <IconArrow></IconArrow>
                                                 {account.ensName || account.displayName}
+
                                                 <div className="drop-down">
                                                     <div
                                                         className="drop-down-content"
@@ -66,6 +70,19 @@ const Menu = ({ project }) => {
                                                     </div>
                                                 </div>
                                             </div>
+                                            {power ? (
+                                                <div className="menu-attest-value">
+                                                    <span className="menu-attest-line"></span>
+                                                    {power}
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    className="menu-attest-btn"
+                                                    onClick={() => setShowModal(true)}
+                                                >
+                                                    Attest
+                                                </div>
+                                            )}
                                         </>
                                     ) : (
                                         <div
@@ -82,6 +99,7 @@ const Menu = ({ project }) => {
                     </div>
                 </div>
             </div>
+            <MintModal isShow={isShowModal} hide={() => setShowModal(false)} />
         </div>
     );
 };

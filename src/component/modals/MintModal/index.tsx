@@ -4,6 +4,8 @@ import Modal from 'react-modal';
 import { useAccount } from 'wagmi';
 import { toast } from 'react-toastify';
 import { ReactComponent as IconClose } from '@/component/icons/svg/close.svg';
+import { formatNumberToMK } from '@/utils/numberUtils';
+import moment from 'moment';
 
 const defaultConfirmModalStyle = {
     overlay: {
@@ -26,20 +28,77 @@ const defaultConfirmModalStyle = {
 };
 export default function MintModal({ hide, isShow }: { hide; isShow }) {
     const { address } = useAccount();
-    const leftColumnData: StatItemProps[] = [
-        { label: 'Collections', value: '12' },
-        { label: 'Total Mints', value: '26.77K' },
-        { label: 'Whales', value: '72' },
-    ];
+    const [myData, setMyData] = useState<{
+        address: string;
+        contracts: {
+            metadata: string;
+            address: string;
+            supply: number;
+            uniqueHolderNumber: number;
+            whaleNumber: number;
+        }[];
+        best_srcs: string[];
+        score: number;
+        uniqueHolderNumber: number;
+        minters: number;
+        whaleNumber: number;
+        rank: number;
+    }>();
+    async function fetchListData(address?: string) {
+        const res = await Promise.resolve([
+            {
+                address: '0x2c3474Bfe64cD9748be69D24c30cC91639265e68',
+                contracts: [
+                    {
+                        metadata: 'string',
+                        address: 'hexString',
+                        supply: 1,
+                        uniqueHolderNumber: 1,
+                        whaleNumber: 1,
+                    },
+                ],
+                best_srcs: [
+                    'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png',
+                    'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png',
+                    'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png',
+                    'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png',
+                    'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png',
+                ], // 随机挑选
+                score: 2.0,
+                uniqueHolderNumber: 103333,
+                minters: 2323000,
+                whaleNumber: 10044,
+                rank: 3,
+            },
+        ]);
 
-    const rightColumnData: StatItemProps[] = [
-        { label: 'Total Gas', value: '$437.25' },
-        { label: 'Holders', value: '1.39K' },
-        { label: 'Blue Chip Holders', value: '41' },
-    ];
-    const imageUrl = 'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar.png';
-    const score = '57.7′ / 100';
-    const lastUpdateTime = '03/26/24';
+        setMyData(res?.[0]);
+    }
+    useEffect(() => {
+        if (address) {
+            fetchListData(address);
+        }
+    }, [address]);
+    const leftColumnData: StatItemProps[] = useMemo(
+        () => [
+            { label: 'Collections', value: myData?.contracts?.length },
+            { label: 'Total Mints', value: formatNumberToMK(myData?.minters || 0) },
+        ],
+        [myData],
+    );
+
+    const rightColumnData: StatItemProps[] = useMemo(
+        () => [
+            // { label: 'Total Gas', value: '$437.25' },
+            { label: 'Holders', value: formatNumberToMK(myData?.uniqueHolderNumber || 0) },
+            { label: 'Whales', value: formatNumberToMK(myData?.whaleNumber || 0) },
+            // { label: 'Blue Chip Holders', value: '41' },
+        ],
+        [myData],
+    );
+    const imageUrl = myData?.best_srcs?.[0]; //'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png';
+    const score = `${myData?.score}′ / 100`;
+    const lastUpdateTime = moment().format('MM/DD/YY');
     return (
         <Modal
             appElement={document.getElementById('root')}
@@ -73,6 +132,7 @@ export default function MintModal({ hide, isShow }: { hide; isShow }) {
                     </div>
                 </section>
                 <div className="modal-mint-btn">Mint</div>
+                <div className="modal-mint-footer">built on EAS</div>
             </div>
         </Modal>
     );
@@ -80,7 +140,7 @@ export default function MintModal({ hide, isShow }: { hide; isShow }) {
 
 interface StatItemProps {
     label: string;
-    value: string;
+    value: string | number;
 }
 
 const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
