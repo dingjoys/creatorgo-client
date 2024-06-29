@@ -21,7 +21,7 @@ function App() {
                     }
                 >
                     <Route index element={<HomePage />}></Route>
-                    <Route path="detail/:id" element={<DetailPage />}></Route>
+                    <Route path="detail/:owner" element={<DetailPage />}></Route>
                     <Route path="*" element={<HomePage />}></Route>
                 </Route>
             </Routes>

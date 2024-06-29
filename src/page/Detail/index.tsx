@@ -5,94 +5,133 @@ import { ReactComponent as IconBadge1 } from '@/component/icons/svg/badge1.svg';
 import { ReactComponent as IconBadge2 } from '@/component/icons/svg/badge2.svg';
 import MyGraph from './MyGraph';
 import { useParams } from 'react-router-dom';
+import { getCreatorData, CreatorDetail } from '@/core/home/neynar';
+import { getProfile } from '@/core/home/user';
+import { formatPrice } from '@/utils/numberUtils';
+import moment from 'moment';
+import { getTopMinters } from '@/core/home/minters';
 
 const defaultAvatar =
     'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png';
 
 export default function Detail() {
+    const { owner } = useParams();
     const [user, setUser] = useState<{
         avatar: string;
         name: string;
-        id: string;
-        score: number;
         description: string;
-        followers: number;
+        farcaster: string | null;
+        twitter: string | null;
     }>();
-
+    const [followers, setFollowers] = useState(0);
     useEffect(() => {
-        fetchCreator();
-    }, []);
+        fetchCreatorData(owner);
+        fetchUserProfile(owner);
+        fetchTopMinters(owner);
+    }, [owner]);
 
-    function fetchCreator() {
-        setUser({
-            avatar: defaultAvatar,
-            name: 'Manveliyo',
-            id: '1',
-            score: 92.7,
-            followers: 20000,
-            description: 'visual artist and researcher in Australia, like life & like art!',
+    const [creatorData, setCreatorData] = useState<CreatorDetail>();
+    async function fetchCreatorData(owner) {
+        if (!owner) return;
+        const data = await getCreatorData(owner);
+        setCreatorData(data);
+    }
+    const [mintInfo, setMintInfo] = useState({});
+    const [topMinters, settopMinters] = useState([]);
+    async function fetchTopMinters(owner) {
+        if (!owner) return;
+        const data = await getTopMinters(owner);
+        settopMinters(data?.topMinters || []);
+        setMintInfo({
+            minterCount: data?.minterCount,
+            totalTxFees: data?.totalTxFees,
+            totalValue: data?.totalValue,
         });
     }
+    async function fetchUserProfile(owner) {
+        if (!owner) return;
+        const userInfo = await getProfile(owner);
+        if (userInfo) {
+            setUser({
+                avatar: userInfo?.userAvatar || defaultAvatar,
+                name: userInfo?.username,
+                farcaster: userInfo?.socialAccounts?.farcaster,
+                twitter: userInfo?.socialAccounts?.twitter,
+                description: userInfo?.description,
+            });
+        }
+    }
+
     const [activeTab, setActiveTab] = useState(1);
 
-    const minters = [
-        {
+    const minters = topMinters.map((item) => {
+        return {
             avatarSrc: defaultAvatar,
-            username: 'beninem',
-            isBadge1: true,
-            isBadge2: true,
-            itemCount: 1203,
-            hasFarcaster: true,
-        },
-        {
-            avatarSrc: defaultAvatar,
-            username: 'beninem',
-            itemCount: 1203,
+            username: item?.username,
+            itemCount: item?.count,
             isBadge1: false,
             isBadge2: false,
             hasFarcaster: true,
-        },
-        {
-            avatarSrc: defaultAvatar,
-            username: 'beninem',
-            itemCount: 1203,
-            isBadge1: true,
-            isBadge2: false,
-            hasFarcaster: true,
-        },
-        {
-            avatarSrc: defaultAvatar,
-            username: 'beninem',
-            itemCount: 1203,
-            isBadge1: true,
-            isBadge2: false,
-            hasFarcaster: true,
-        },
-        {
-            avatarSrc: defaultAvatar,
-            username: 'beninem',
-            itemCount: 1203,
-            isBadge1: true,
-            isBadge2: true,
-            hasFarcaster: true,
-        },
-        {
-            avatarSrc: defaultAvatar,
-            username: 'beninem',
-            itemCount: 1203,
-            isBadge1: false,
-            isBadge2: true,
-            hasFarcaster: true,
-        },
-        {
-            avatarSrc: defaultAvatar,
-            username: 'beninem',
-            itemCount: 1203,
-            isBadge1: true,
-            isBadge2: true,
-            hasFarcaster: true,
-        },
-    ];
+        };
+    });
+    // [
+    //     {
+    //         avatarSrc: defaultAvatar,
+    //         username: 'beninem',
+    //         isBadge1: true,
+    //         isBadge2: true,
+    //         itemCount: 1203,
+    //         hasFarcaster: true,
+    //     },
+    //     {
+    //         avatarSrc: defaultAvatar,
+    //         username: 'beninem',
+    //         itemCount: 1203,
+    //         isBadge1: false,
+    //         isBadge2: false,
+    //         hasFarcaster: true,
+    //     },
+    //     {
+    //         avatarSrc: defaultAvatar,
+    //         username: 'beninem',
+    //         itemCount: 1203,
+    //         isBadge1: true,
+    //         isBadge2: false,
+    //         hasFarcaster: true,
+    //     },
+    //     {
+    //         avatarSrc: defaultAvatar,
+    //         username: 'beninem',
+    //         itemCount: 1203,
+    //         isBadge1: true,
+    //         isBadge2: false,
+    //         hasFarcaster: true,
+    //     },
+    //     {
+    //         avatarSrc: defaultAvatar,
+    //         username: 'beninem',
+    //         itemCount: 1203,
+    //         isBadge1: true,
+    //         isBadge2: true,
+    //         hasFarcaster: true,
+    //     },
+    //     {
+    //         avatarSrc: defaultAvatar,
+    //         username: 'beninem',
+    //         itemCount: 1203,
+    //         isBadge1: false,
+    //         isBadge2: true,
+    //         hasFarcaster: true,
+    //     },
+    //     {
+    //         avatarSrc: defaultAvatar,
+    //         username: 'beninem',
+    //         itemCount: 1203,
+    //         isBadge1: true,
+    //         isBadge2: true,
+    //         hasFarcaster: true,
+    //     },
+    // ];
 
     const nftData: NFTCardProps[] = [
         {
@@ -209,7 +248,9 @@ export default function Detail() {
                                 <header className="diu-profile-header">
                                     <div className="diu-profile-info">
                                         <h1 className="diu-profile-name">{user?.name}</h1>
-                                        <span className="diu-profile-score">{user?.score}′</span>
+                                        <span className="diu-profile-score">
+                                            {creatorData?.score}′
+                                        </span>
                                         <div className="diu-profile-actions">
                                             <button className="diu-follow-button">Follow</button>
 
@@ -230,8 +271,7 @@ export default function Detail() {
 
                                     <p className="diu-profile-description">{user?.description}</p>
                                     <p className="diu-profile-followers">
-                                        <strong>{user?.followers.toLocaleString()}</strong>{' '}
-                                        followers
+                                        <strong>{followers}</strong> followers
                                     </p>
                                 </header>
                             </div>
@@ -244,10 +284,10 @@ export default function Detail() {
                                         <div className="dd-stats-key">Chain</div>
                                         <div className="dd-stats-value">Zora</div>
                                     </div>
-                                    <div className="dd-stats-row">
+                                    {/* <div className="dd-stats-row">
                                         <div className="dd-stats-key">Unique minters</div>
                                         <div className="dd-stats-value">2,785(2%)</div>
-                                    </div>
+                                    </div> */}
                                     <div className="dd-stats-row">
                                         <div className="dd-stats-key">Earnings</div>
                                         <div className="dd-stats-value">75.21 ETH</div>
@@ -256,23 +296,34 @@ export default function Detail() {
                                 <div className="dd-stats-item">
                                     <div className="dd-stats-row">
                                         <div className="dd-stats-key">Total minted</div>
-                                        <div className="dd-stats-value">76,522 items</div>
+                                        <div className="dd-stats-value">
+                                            {creatorData?.totalMint
+                                                ? formatPrice(creatorData?.totalMint)
+                                                : creatorData?.totalMint}{' '}
+                                            items
+                                        </div>
                                     </div>
                                     <div className="dd-stats-row">
                                         <div className="dd-stats-key">First timestamp</div>
-                                        <div className="dd-stats-value">Mar 31, 2023, 4:22</div>
+                                        <div className="dd-stats-value">
+                                            {creatorData?.firstMintBlockNumber
+                                                ? moment(creatorData?.firstMintBlockNumber).format(
+                                                      'MMM,DD,YYYY H:MM',
+                                                  )
+                                                : '-'}
+                                        </div>
                                     </div>
-                                    <div className="dd-stats-row">
+                                    {/* <div className="dd-stats-row">
                                         <div className="dd-stats-key">Total gas</div>
                                         <div className="dd-stats-value">2.63 ETH</div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </section>
                         </div>
                         <div>
                             <div className="di-title">
                                 Farcaster minters
-                                <div className="di-subtitle">Farcaster minters</div>
+                                <div className="di-subtitle">Top minters</div>
                             </div>
                             <div className="di-minters">
                                 {minters.map((item, index) => (
