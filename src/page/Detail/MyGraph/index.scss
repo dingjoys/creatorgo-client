@@ -11,3 +11,105 @@
         height: 750px;
     }
 }
+.tooltip-warpper {
+    width: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+
+    background: #000;
+    padding: 24px;
+    .tooltip-header {
+        display: flex;
+        gap: 16px;
+        text-align: left;
+    }
+    .tooltip-header-img {
+        width: 74px;
+        height: 88px;
+    }
+    .tooltip-header-name {
+        color: #fff;
+        font-family: Poppins;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%; /* 24px */
+    }
+
+    .th-user-avatar {
+        width: 16px;
+        height: 16px;
+    }
+    .tooltip-header-date {
+        color: #fff;
+        font-family: Poppins;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%; /* 18px */
+        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        .tooltip-header-line {
+            display: flex;
+            align-items: center;
+            width: 1px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.25);
+        }
+    }
+    .th-total-minters {
+        color: #fbec50;
+        text-align: right;
+        font-family: Melodrama;
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 150%; /* 36px */
+        margin-top: 8px;
+    }
+    .tooltip-top-minters {
+        border-top: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+        font-family: Poppins;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%; /* 30px */
+        padding-top: 24px;
+        margin-top: 24px;
+        margin-bottom: 16px;
+    }
+    .ttm-ul {
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .ttm-li {
+        color: #fff;
+        font-family: Poppins;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%; /* 24px */
+        list-style: none;
+        color: #fff;
+        font-family: Poppins;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%; /* 24px */
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        .ttm-li-line {
+            display: inline-block;
+            width: 1px;
+            height: 16px;
+            transform: rotate(15deg);
+            background: rgba(255, 255, 255, 0.25);
+        }
+    }
+}
