@@ -14,7 +14,7 @@ import EmptyDataHint from '@/component/EmptyDataHint';
 import MintModal from '@/component/modals/MintModal';
 import { Checkbox } from '@/component/form/Checkbox';
 import { isAddress } from 'viem';
-import { getFarcasterByAddresses } from '@/core/home/neynar';
+import { getFarcasterByAddresses, getHomeList } from '@/core/home/neynar';
 import { getAdaptiveUsername, getAdaptiveUserAvatar } from '@/utils/userUtils';
 import { formatNumberToMK } from '@/utils/numberUtils';
 type Address = `0x${string}`;
@@ -32,7 +32,9 @@ export default function HomePage() {
         {
             stats: { label: string; value: string | number }[];
             address: string;
-            rank: number;
+            // rank: number;
+            username: string;
+            avatar: string;
             score: number;
             images: string[];
         }[]
@@ -84,80 +86,29 @@ export default function HomePage() {
         fetchListData();
     }, []);
     async function fetchListData(keywork?: string) {
-        const res = await Promise.resolve([
-            {
-                address: '0x2c3474Bfe64cD9748be69D24c30cC91639265e68',
-                contracts: [
-                    {
-                        metadata: 'string',
-                        address: 'hexString',
-                        supply: 1,
-                        uniqueHolderNumber: 1,
-                        whaleNumber: 1,
-                    },
-                ],
-                best_srcs: [defaultAvatar, defaultAvatar, defaultAvatar, defaultAvatar], // 随机挑选
-                score: 2.0,
-                uniqueHolderNumber: 103333,
-                minters: 2323000,
-                whaleNumber: 10044,
-                rank: 3,
-            },
-            {
-                address: '0x50889b88D800Cd8939Ca6aDB36e9d02Ca259AA06',
-                contracts: [
-                    {
-                        metadata: 'string',
-                        address: 'hexString',
-                        supply: 1,
-                        uniqueHolderNumber: 1,
-                        whaleNumber: 1,
-                    },
-                ],
-                best_srcs: [defaultAvatar, defaultAvatar, defaultAvatar, defaultAvatar], // 随机挑选
+        const data = await getHomeList();
 
-                score: 2.0,
-                minters: 2323000,
-
-                uniqueHolderNumber: 10,
-                whaleNumber: 100,
-                rank: 3,
-            },
-            {
-                address: '0xB3ba3E63D62dB825840475C341823215B1a596c3',
-                contracts: [
-                    {
-                        metadata: 'string',
-                        address: 'hexString',
-                        supply: 1,
-                        uniqueHolderNumber: 1,
-                        whaleNumber: 1,
-                    },
-                ],
-                best_srcs: [defaultAvatar, defaultAvatar, defaultAvatar, defaultAvatar], // 随机挑选
-
-                score: 2.0,
-                minters: 2323000,
-
-                uniqueHolderNumber: 10,
-                whaleNumber: 100,
-                rank: 3,
-            },
-        ]);
-        const temp = res?.map((item) => {
+        const temp = data?.map((item) => {
             return {
                 stats: [
-                    { label: 'Collections', value: item.contracts?.length },
+                    { label: 'Collections', value: item.collections?.length },
                     // { label: 'Total Gas', value: '$437.25' },
-                    { label: 'Total Mints', value: formatNumberToMK(item.minters) },
+                    { label: 'Mints', value: formatNumberToMK(item.recentMints?.length) },
+                    { label: 'Minted', value: formatNumberToMK(item.totalMint) },
                     { label: 'Holders', value: formatNumberToMK(item.uniqueHolderNumber) },
                     { label: 'Whales', value: formatNumberToMK(item.whaleNumber) },
                     // { label: 'Blue Chip Holders', value: '41' },
                 ],
-                address: item.address,
-                rank: item.rank,
+                address: item.zora?.address,
+                username: item.zora?.username,
+                addressShort: item.zora?.addressShort,
+                avatar:
+                    (item.zora?.avatar?.indexOf('http') == -1
+                        ? `https://zora.co${item.zora?.avatar}`
+                        : item.zora?.avatar) || defaultAvatar,
+                // rank: item.rank,
                 score: item.score,
-                images: item.best_srcs,
+                images: [],
             };
         });
         setList(temp);
@@ -245,13 +196,14 @@ export default function HomePage() {
 
                     {list?.length ? (
                         <ul className="ap2-list">
-                            {list.map((item) => {
+                            {list.map((item, index) => {
                                 const ensname =
-                                    ensNameArr.find((a) => a.address === item.address)?.name || '-';
-                                const ensavatar = ensAvatarArr.find(
-                                    (a) => a.address === item.address,
-                                )?.avatar;
-                                console.log('farcasterUserMap', farcasterUserMap);
+                                    item.username ||
+                                    ensNameArr.find((a) => a.address === item.address)?.name ||
+                                    '-';
+                                const ensavatar =
+                                    item.avatar ||
+                                    ensAvatarArr.find((a) => a.address === item.address)?.avatar;
                                 const farcasterItem =
                                     farcasterUserMap[String(item.address).toLowerCase()];
                                 const farcasterName = farcasterItem?.[0]?.username;
@@ -259,7 +211,7 @@ export default function HomePage() {
                                     <li className="ap2-list-item" key={item.address}>
                                         <div className="ap2-list-item-left">
                                             <ProfileCard
-                                                rank={item.rank}
+                                                rank={index + 1}
                                                 name={ensname}
                                                 score={item.score}
                                                 avatarSrc={ensavatar}

@@ -46,7 +46,10 @@ export default function Detail() {
         }
         const userInfo = data?.zora;
         setUser({
-            avatar: `https://zora.co${userInfo?.avatar}` || defaultAvatar,
+            avatar:
+                (userInfo?.avatar?.indexOf('http') == -1
+                    ? `https://zora.co${userInfo?.avatar}`
+                    : userInfo?.avatar) || defaultAvatar,
             name: userInfo?.username,
             farcaster: userInfo?.extension?.links?.farcaster,
             twitter: userInfo?.extension?.links?.twitter,

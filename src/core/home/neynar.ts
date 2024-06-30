@@ -1,4 +1,6 @@
 import axios from 'axios';
+import ethers from 'ethers';
+
 const apiKey = process.env.REACT_APP_NEYNAR_API_KEY || '';
 const neynarRequest = axios.create({
     baseURL: 'https://api.neynar.com/v2/farcaster',
@@ -93,395 +95,6 @@ export interface CreatorDetail {
 }
 export async function getCreatorData(owner: string): Promise<CreatorDetail> {
     try {
-        // return {
-        //     uniqueHolderNumber: 117,
-        //     totalAmount: 117,
-        //     totalMint: 117,
-        //     whaleNumber: 0,
-        //     collections: [
-        //         {
-        //             metadata: {},
-        //             tokens: [
-        //                 {
-        //                     contract: '0x060f3edd18c47f59bd23d063bbeb9aa4a8fec6df',
-        //                     tokenId: '1',
-        //                     total_amount: '116',
-        //                     img: {
-        //                         name: 'Farcaster: Giraffe',
-        //                         description: 'Released on 2023-01-02',
-        //                         image: 'ipfs://bafybeiegrnialwu66u3nwzkn4gik4i2x2h4ip7y3w2dlymzlpxb5lrqbom',
-        //                         content: {
-        //                             mime: 'image/png',
-        //                             uri: 'ipfs://bafybeiegrnialwu66u3nwzkn4gik4i2x2h4ip7y3w2dlymzlpxb5lrqbom',
-        //                         },
-        //                     },
-        //                 },
-        //             ],
-        //             mintfun: {
-        //                 details: {
-        //                     topMinters: [
-        //                         {
-        //                             minter: 'ethereum:0xf70da97812cb96acdf810712aa562db8dfa3dbef',
-        //                             count: '8051',
-        //                         },
-        //                         {
-        //                             minter: 'ethereum:0x81f91aca8c05b3eefebc00171139afefac17c9a6',
-        //                             count: '1700',
-        //                         },
-        //                         {
-        //                             minter: 'ethereum:0x2d93c2f74b2c4697f9ea85d0450148aa45d4d5a2',
-        //                             count: '108',
-        //                         },
-        //                         {
-        //                             minter: 'ethereum:0x855a4621d491ff98bc3d02eadbc108403887561c',
-        //                             count: '78',
-        //                         },
-        //                         {
-        //                             minter: 'ethereum:0x3a4afca659f54922a0d7a7b0bebabf641dec66bb',
-        //                             count: '71',
-        //                         },
-        //                         {
-        //                             minter: 'ethereum:0x965ef172b303b0bcdc38669df1de3c26bad2db8a',
-        //                             count: '71',
-        //                         },
-        //                         {
-        //                             minter: 'ethereum:0xbe0c12b56aa9b4f5dde36c733b3a2997ed775a4f',
-        //                             count: '65',
-        //                         },
-        //                         {
-        //                             minter: 'ethereum:0x56ad2cd6ad6f52c72181b93ac66d5dc887c3d0bd',
-        //                             count: '64',
-        //                         },
-        //                         {
-        //                             minter: 'ethereum:0x2956be76d7164486ad89aa748db054ff91ffbfcd',
-        //                             count: '14',
-        //                         },
-        //                         {
-        //                             minter: 'ethereum:0x3d5750d305f8d9c133faceaa92a2e46558130371',
-        //                             count: '11',
-        //                         },
-        //                     ],
-        //                     minterCount: '56953',
-        //                     totalTxFees: '3280403640269713521',
-        //                     avgGas: '308933676',
-        //                     totalValue: '52211982000000000000',
-        //                     additionalUrls: [
-        //                         {
-        //                             label: 'Zora',
-        //                             url: 'https://zora.co/collect/zora:0x060f3EDD18c47F59Bd23D063BBEB9aA4A8Fec6DF',
-        //                         },
-        //                     ],
-        //                 },
-        //                 profiles: [
-        //                     {
-        //                         id: 'ethereum:0xf70da97812cb96acdf810712aa562db8dfa3dbef',
-        //                         address: {
-        //                             kind: 'ethereum',
-        //                             value: '0xf70da97812cb96acdf810712aa562db8dfa3dbef',
-        //                         },
-        //                         name: '0xf70da9',
-        //                         nameKind: 'address',
-        //                         slug: '0xf70da97812cb96acdf810712aa562db8dfa3dbef',
-        //                     },
-        //                     {
-        //                         id: 'ethereum:0x81f91aca8c05b3eefebc00171139afefac17c9a6',
-        //                         address: {
-        //                             kind: 'ethereum',
-        //                             value: '0x81f91aca8c05b3eefebc00171139afefac17c9a6',
-        //                         },
-        //                         name: '0x81f91a',
-        //                         nameKind: 'address',
-        //                         slug: '0x81f91aca8c05b3eefebc00171139afefac17c9a6',
-        //                     },
-        //                     {
-        //                         id: 'ethereum:0x2d93c2f74b2c4697f9ea85d0450148aa45d4d5a2',
-        //                         address: {
-        //                             kind: 'ethereum',
-        //                             value: '0x2d93c2f74b2c4697f9ea85d0450148aa45d4d5a2',
-        //                         },
-        //                         name: '0x2d93c2',
-        //                         nameKind: 'address',
-        //                         slug: '0x2d93c2f74b2c4697f9ea85d0450148aa45d4d5a2',
-        //                     },
-        //                     {
-        //                         id: 'ethereum:0x855a4621d491ff98bc3d02eadbc108403887561c',
-        //                         address: {
-        //                             kind: 'ethereum',
-        //                             value: '0x855a4621d491ff98bc3d02eadbc108403887561c',
-        //                         },
-        //                         name: '0x855a46',
-        //                         nameKind: 'address',
-        //                         slug: '0x855a4621d491ff98bc3d02eadbc108403887561c',
-        //                     },
-        //                     {
-        //                         id: 'ethereum:0x3a4afca659f54922a0d7a7b0bebabf641dec66bb',
-        //                         address: {
-        //                             kind: 'ethereum',
-        //                             value: '0x3a4afca659f54922a0d7a7b0bebabf641dec66bb',
-        //                         },
-        //                         name: '0x3a4afc',
-        //                         nameKind: 'address',
-        //                         slug: '0x3a4afca659f54922a0d7a7b0bebabf641dec66bb',
-        //                     },
-        //                     {
-        //                         id: 'ethereum:0x965ef172b303b0bcdc38669df1de3c26bad2db8a',
-        //                         address: {
-        //                             kind: 'ethereum',
-        //                             value: '0x965ef172b303b0bcdc38669df1de3c26bad2db8a',
-        //                         },
-        //                         name: 'signer1.floornfts.eth',
-        //                         nameKind: 'ens',
-        //                         slug: 'signer1.floornfts.eth',
-        //                     },
-        //                     {
-        //                         id: 'ethereum:0xbe0c12b56aa9b4f5dde36c733b3a2997ed775a4f',
-        //                         address: {
-        //                             kind: 'ethereum',
-        //                             value: '0xbe0c12b56aa9b4f5dde36c733b3a2997ed775a4f',
-        //                         },
-        //                         name: '0xbe0c12',
-        //                         nameKind: 'address',
-        //                         slug: '0xbe0c12b56aa9b4f5dde36c733b3a2997ed775a4f',
-        //                     },
-        //                     {
-        //                         id: 'ethereum:0x56ad2cd6ad6f52c72181b93ac66d5dc887c3d0bd',
-        //                         address: {
-        //                             kind: 'ethereum',
-        //                             value: '0x56ad2cd6ad6f52c72181b93ac66d5dc887c3d0bd',
-        //                         },
-        //                         name: '0x56ad2c',
-        //                         nameKind: 'address',
-        //                         slug: '0x56ad2cd6ad6f52c72181b93ac66d5dc887c3d0bd',
-        //                     },
-        //                     {
-        //                         id: 'ethereum:0x2956be76d7164486ad89aa748db054ff91ffbfcd',
-        //                         address: {
-        //                             kind: 'ethereum',
-        //                             value: '0x2956be76d7164486ad89aa748db054ff91ffbfcd',
-        //                         },
-        //                         name: '0x2956be',
-        //                         nameKind: 'address',
-        //                         slug: '0x2956be76d7164486ad89aa748db054ff91ffbfcd',
-        //                     },
-        //                     {
-        //                         id: 'ethereum:0x3d5750d305f8d9c133faceaa92a2e46558130371',
-        //                         address: {
-        //                             kind: 'ethereum',
-        //                             value: '0x3d5750d305f8d9c133faceaa92a2e46558130371',
-        //                         },
-        //                         name: '0x3d5750',
-        //                         nameKind: 'address',
-        //                         slug: '0x3d5750d305f8d9c133faceaa92a2e46558130371',
-        //                     },
-        //                 ],
-        //             },
-        //         },
-        //         {
-        //             metadata: {},
-        //             tokens: [
-        //                 {
-        //                     contract: '0x209ef5bb2ca40841b87fa87dd661d622e007a588',
-        //                     tokenId: '1',
-        //                     total_amount: '1',
-        //                     img: null,
-        //                 },
-        //             ],
-        //             mintfun: {
-        //                 details: {
-        //                     topMinters: [
-        //                         {
-        //                             minter: 'ethereum:0xbc698ce1933afb2980d4a5a0f85fea1b02fbb1c9',
-        //                             count: '1',
-        //                         },
-        //                     ],
-        //                     minterCount: '1',
-        //                     totalTxFees: '8598204299100',
-        //                     avgGas: '100000050',
-        //                     totalValue: '0',
-        //                     additionalUrls: [
-        //                         {
-        //                             label: 'Zora',
-        //                             url: 'https://zora.co/collect/zora:0x209EF5bb2Ca40841b87Fa87dD661D622e007A588',
-        //                         },
-        //                     ],
-        //                 },
-        //                 profiles: [
-        //                     {
-        //                         id: 'ethereum:0xbc698ce1933afb2980d4a5a0f85fea1b02fbb1c9',
-        //                         address: {
-        //                             kind: 'ethereum',
-        //                             value: '0xbc698ce1933afb2980d4a5a0f85fea1b02fbb1c9',
-        //                         },
-        //                         name: '0xbc698c',
-        //                         nameKind: 'address',
-        //                         slug: '0xbc698ce1933afb2980d4a5a0f85fea1b02fbb1c9',
-        //                     },
-        //                 ],
-        //             },
-        //         },
-        //     ],
-        //     score: 78.5622357236987,
-        //     recentMints: [
-        //         {
-        //             contract: '0x060f3edd18c47f59bd23d063bbeb9aa4a8fec6df',
-        //             token_id: '0x01',
-        //             minter: '0x8c252529b8b0a49b219abc8ab9000d08fd66cd19',
-        //             block_number: 10652495,
-        //         },
-        //         {
-        //             contract: '0x060f3edd18c47f59bd23d063bbeb9aa4a8fec6df',
-        //             token_id: '0x01',
-        //             minter: '0xb043eb320dfbf21fcfd59def1f356f2e0c163617',
-        //             block_number: 10649996,
-        //         },
-        //         {
-        //             contract: '0x060f3edd18c47f59bd23d063bbeb9aa4a8fec6df',
-        //             token_id: '0x01',
-        //             minter: '0x4bc5574a93b04d78b39a41e94e675eb5f48727ab',
-        //             block_number: 10618598,
-        //         },
-        //         {
-        //             contract: '0x060f3edd18c47f59bd23d063bbeb9aa4a8fec6df',
-        //             token_id: '0x01',
-        //             minter: '0x893e16c3934696c6abe3a615755081e97edace71',
-        //             block_number: 10617819,
-        //         },
-        //         {
-        //             contract: '0x060f3edd18c47f59bd23d063bbeb9aa4a8fec6df',
-        //             token_id: '0x01',
-        //             minter: '0x7775358ec20ce6fcc53ce1a716818e7bf1e6f68d',
-        //             block_number: 10617607,
-        //         },
-        //         {
-        //             contract: '0x060f3edd18c47f59bd23d063bbeb9aa4a8fec6df',
-        //             token_id: '0x01',
-        //             minter: '0x5ead5ecdc7539201a8c6c5a665e6fae419d17700',
-        //             block_number: 10617458,
-        //         },
-        //         {
-        //             contract: '0x060f3edd18c47f59bd23d063bbeb9aa4a8fec6df',
-        //             token_id: '0x01',
-        //             minter: '0xbdc9494184c8e5aef4553469a1553a2046552a0b',
-        //             block_number: 10614011,
-        //         },
-        //         {
-        //             contract: '0x060f3edd18c47f59bd23d063bbeb9aa4a8fec6df',
-        //             token_id: '0x01',
-        //             minter: '0xef32ded1a96abac21d4f8256430d84006061e193',
-        //             block_number: 10611216,
-        //         },
-        //         {
-        //             contract: '0x060f3edd18c47f59bd23d063bbeb9aa4a8fec6df',
-        //             token_id: '0x01',
-        //             minter: '0x238d75a6fcad33ef1c30853f3ffdd4e4281ac853',
-        //             block_number: 10606456,
-        //         },
-        //         {
-        //             contract: '0x060f3edd18c47f59bd23d063bbeb9aa4a8fec6df',
-        //             token_id: '0x01',
-        //             minter: '0xcf0df4a2f06bb653de859369929bc9b17716aa8a',
-        //             block_number: 10580376,
-        //         },
-        //     ],
-        //     firstMintBlockNumber: 5181802,
-        //     zora: {
-        //         address: '0xbc698ce1933afb2980d4a5a0f85fea1b02fbb1c9',
-        //         addressShort: '0xbc69...b1c9',
-        //         avatar: '/api/avatar/0xbc698ce1933afb2980d4a5a0f85fea1b02fbb1c9',
-        //         username: 'farcaster',
-        //         displayName: null,
-        //         ensName: null,
-        //         handle: 'farcaster',
-        //         profileId: 'farcaster',
-        //         profileName: 'farcaster',
-        //         ensRecords: null,
-        //         description: null,
-        //         totalFollowers: 36713,
-        //         totalFollowing: 0,
-        //         extension: {
-        //             theme: {
-        //                 color: {
-        //                     background: '#FFFFFF',
-        //                     text: '#000000',
-        //                     accent: '#000000',
-        //                     accentText: '#FFFFFF',
-        //                     border: '#000000',
-        //                 },
-        //                 font: {
-        //                     heading: {
-        //                         fontFamily: 'Inter Tight',
-        //                         fontSize: '32px',
-        //                         lineHeight: '1.1',
-        //                     },
-        //                     body: {
-        //                         fontFamily: 'Inter Tight',
-        //                         fontSize: '15px',
-        //                         lineHeight: '1.3',
-        //                     },
-        //                     caption: {
-        //                         fontFamily: 'Inter Tight',
-        //                         fontSize: '12px',
-        //                         lineHeight: '1.3',
-        //                     },
-        //                 },
-        //                 button: {
-        //                     shape: 'inherit',
-        //                 },
-        //                 unit: {
-        //                     radius: '4px',
-        //                     base: '6px',
-        //                 },
-        //             },
-        //             links: {
-        //                 twitter: null,
-        //                 instagram: null,
-        //                 farcaster: null,
-        //                 tiktok: null,
-        //                 discord: null,
-        //                 website: null,
-        //             },
-        //             options: {
-        //                 showMetadataHistories: false,
-        //                 useBorders: null,
-        //                 textTransform: {
-        //                     heading: 'none',
-        //                     body: 'none',
-        //                     caption: 'none',
-        //                 },
-        //                 backgroundImage: {
-        //                     image: null,
-        //                     title: null,
-        //                     blur: 0,
-        //                     opacity: 1,
-        //                     size: 300,
-        //                     repeat: false,
-        //                     style: 'fill',
-        //                 },
-        //                 dropShadow: {
-        //                     spreadRadius: 0,
-        //                     blurRadius: 0,
-        //                     color: '#000000',
-        //                     opacity: 0,
-        //                 },
-        //                 textStyling: {
-        //                     styleType: 'none',
-        //                     horizontalLength: 0,
-        //                     verticalLength: 0,
-        //                     blurRadius: 0,
-        //                     color: '#000000',
-        //                     opacity: 0,
-        //                 },
-        //             },
-        //             profile: {
-        //                 displayOptions: {
-        //                     initialView: null,
-        //                 },
-        //             },
-        //             template: 'Default',
-        //         },
-        //         extensionUrl: null,
-        //     },
-        // };
         const res = await request.get(`/creator/data?owner=${owner}`, {
             timeout: 20000,
         });
@@ -493,3 +106,170 @@ export async function getCreatorData(owner: string): Promise<CreatorDetail> {
         return {} as any;
     }
 }
+export async function getHomeList() {
+    try {
+        const res = await request.get(`/creators/random`, {
+            timeout: 20000,
+        });
+        if (res.data?.code == 0) {
+            return res.data.data as CreatorDetail[];
+        } else {
+            return [];
+        }
+    } catch (e) {
+        return [];
+    }
+}
+// export const getCollectionData = async (contract, provider) => {
+//     console.log(contract);
+//     const tokenIds: any = await NftTransfer.findAll({
+//         attributes: ['token_id', [literal('sum(amount)'), 'total_amount']],
+//         where: {
+//             contract: hexStringToBinary(contract),
+//             [Op.and]: [literal("`from`=x'0000000000000000000000000000000000000000'")],
+//         },
+//         group: ['token_id'],
+//         limit: 100000,
+//         raw: true,
+//     });
+//     const data: any[] = [];
+//     for (let i = 0; i < 3 && i < tokenIds.length; i++) {
+//         let tokenIdObj = tokenIds[i];
+//         const img = await getNftMetadata(contract, binaryToNumber(tokenIdObj.token_id), provider);
+//         data.push({
+//             contract,
+//             tokenId: binaryToNumber(tokenIdObj.token_id).toString(),
+//             total_amount: tokenIdObj.total_amount,
+//             img,
+//         });
+//     }
+//     return data;
+// };
+
+// export const nftAbi = [
+//     {
+//         inputs: [],
+//         name: 'totalSupply',
+//         outputs: [
+//             {
+//                 internalType: 'uint256',
+//                 name: '',
+//                 type: 'uint256',
+//             },
+//         ],
+//         stateMutability: 'view',
+//         type: 'function',
+//     },
+//     {
+//         inputs: [],
+//         name: 'contractURI',
+//         outputs: [
+//             {
+//                 internalType: 'string',
+//                 name: '',
+//                 type: 'string',
+//             },
+//         ],
+//         stateMutability: 'view',
+//         type: 'function',
+//     },
+//     {
+//         inputs: [
+//             {
+//                 internalType: 'uint256',
+//                 name: 'tokenId',
+//                 type: 'uint256',
+//             },
+//         ],
+//         name: 'uri',
+//         outputs: [
+//             {
+//                 internalType: 'string',
+//                 name: '',
+//                 type: 'string',
+//             },
+//         ],
+//         stateMutability: 'view',
+//         type: 'function',
+//     },
+//     {
+//         inputs: [
+//             {
+//                 internalType: 'uint256',
+//                 name: 'tokenId',
+//                 type: 'uint256',
+//             },
+//         ],
+//         name: 'tokenURI',
+//         outputs: [
+//             {
+//                 internalType: 'string',
+//                 name: '',
+//                 type: 'string',
+//             },
+//         ],
+//         stateMutability: 'view',
+//         type: 'function',
+//     },
+//     {
+//         inputs: [],
+//         name: 'name',
+//         outputs: [
+//             {
+//                 internalType: 'string',
+//                 name: '',
+//                 type: 'string',
+//             },
+//         ],
+//         stateMutability: 'view',
+//         type: 'function',
+//     },
+//     {
+//         inputs: [],
+//         name: 'owner',
+//         outputs: [
+//             {
+//                 internalType: 'address',
+//                 name: '',
+//                 type: 'address',
+//             },
+//         ],
+//         stateMutability: 'view',
+//         type: 'function',
+//     },
+// ];
+// export const getNftMetadata = async (contract, tokenId: BigNumberish, provider) => {
+//     const contractObj = new ethers.Contract(contract, nftAbi, provider);
+//     try {
+//         const uri = await contractObj.uri(tokenId);
+//         if (uri) {
+//             const result = await fetchAPiOrIpfsData(uri);
+//             return result;
+//             if (result.image) {
+//                 return result.image;
+//             }
+//         }
+//     } catch (e) {
+//         try {
+//             const uri = await contractObj.tokenURI(tokenId);
+//             if (uri) {
+//                 const result = await fetchAPiOrIpfsData(uri);
+//                 return result;
+//                 if (result.image) {
+//                     return result.image;
+//                 }
+//             }
+//         } catch (e2) {
+//             return null;
+//         }
+//     }
+// };
+
+// const ipfsHead = 'https://metopia.quicknode-ipfs.com/ipfs';
+// export const fetchAPiOrIpfsData = (uri) => {
+//     if (uri.startsWith('ipfs://')) {
+//         return axios.get(`${ipfsHead}/${uri.replace('ipfs://', '')}`).then((res) => res.data);
+//     } else {
+//         return axios.get(uri).then((res) => res.data);
+//     }
+// };
