@@ -180,7 +180,7 @@ export default function HomePage() {
             refreshWhenHidden: false,
         },
     );
-    console.log(myAttestation,myAttestation.length)
+    console.log(myAttestation, myAttestation?.length);
 
     return (
         <div className={`artela-page ${isMobile ? 'is-mobile' : ''}`}>
@@ -437,7 +437,12 @@ const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
 const ImageModal = ({ images }) => {
     return (
         <div className="ap2-image-modal">
-            <div className="ap2-image-container">
+            <div
+                className="ap2-image-container"
+                style={{
+                    animationDuration: `${(images?.length || 10) * 1.5}s`,
+                }}
+            >
                 {(images || []).map((item) => {
                     return (
                         <NftImage
