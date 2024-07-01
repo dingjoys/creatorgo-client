@@ -180,6 +180,7 @@ export default function HomePage() {
             refreshWhenHidden: false,
         },
     );
+    console.log(myAttestation,myAttestation.length)
 
     return (
         <div className={`artela-page ${isMobile ? 'is-mobile' : ''}`}>
@@ -203,7 +204,7 @@ export default function HomePage() {
                         Click to
                         {address ? (
                             <div className="apm-mint-btn" onClick={() => setShowModal(true)}>
-                                {myAttestation?.length ? 'attest your power' : 'update your power'}
+                                {myAttestation?.length ? 'update your power' : 'attest your power'}
                             </div>
                         ) : (
                             <div
