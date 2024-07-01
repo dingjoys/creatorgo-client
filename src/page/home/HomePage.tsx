@@ -20,6 +20,8 @@ import { formatNumberToMK } from '@/utils/numberUtils';
 import useSWR from 'swr';
 import { useAccount } from 'wagmi';
 import { fetchMyAttestion } from '@/component/modules/Menu';
+import axios from 'axios';
+import { getZoraSrc } from '@/core/metadataReader';
 type Address = `0x${string}`;
 const defaultAvatar =
     'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png';
@@ -31,15 +33,7 @@ export default function HomePage() {
     const [searchText, setSearchText] = useState('');
     const [ensNameArr, setEnsNameArr] = useState<{ name: string; address: string }[]>([]);
     const [ensAvatarArr, setEnsAvatarArr] = useState<{ address: string; avatar: string }[]>([]);
-    const [list, setList] = useState<
-        {
-            stats: { label: string; value: string | number }[];
-            address: string;
-            rank: number;
-            score: number;
-            images: string[];
-        }[]
-    >([]);
+    const [list, setList] = useState<any[]>([]);
     const [farcasterUserMap, setFarcasterUserMap] = useState({});
     async function getFarcasterInfo(accounts: string[]) {
         const searchAccounts = accounts.filter(
@@ -53,21 +47,21 @@ export default function HomePage() {
             }
         }
     }
-    function getUsersName(accounts: string[]) {
-        return Promise.all(
-            accounts
-                .filter((item) => !ensNameArr.map((a) => a.address).includes(item))
-                .map(async (account) => {
-                    const name = await getAdaptiveUsername(account);
-                    return {
-                        address: account,
-                        name: isAddress(name) ? getShortAddress(account) : name,
-                    };
-                }),
-        ).then((result) => {
-            setEnsNameArr(result);
-        });
-    }
+    // function getUsersName(accounts: string[]) {
+    //     return Promise.all(
+    //         accounts
+    //             .filter((item) => !ensNameArr.map((a) => a.address).includes(item))
+    //             .map(async (account) => {
+    //                 const name = await getAdaptiveUsername(account);
+    //                 return {
+    //                     address: account,
+    //                     name: isAddress(name) ? getShortAddress(account) : name,
+    //                 };
+    //             }),
+    //     ).then((result) => {
+    //         setEnsNameArr(result);
+    //     });
+    // }
     function getUsersAvatar(accounts: string[]) {
         return Promise.all(
             accounts
@@ -86,89 +80,53 @@ export default function HomePage() {
     useEffect(() => {
         fetchListData();
     }, []);
+
     async function fetchListData(keywork?: string) {
-        const res = await Promise.resolve([
-            {
-                address: '0x2c3474Bfe64cD9748be69D24c30cC91639265e68',
-                contracts: [
-                    {
-                        metadata: 'string',
-                        address: 'hexString',
-                        supply: 1,
-                        uniqueHolderNumber: 1,
-                        whaleNumber: 1,
-                    },
-                ],
-                best_srcs: [defaultAvatar, defaultAvatar, defaultAvatar, defaultAvatar], // 随机挑选
-                score: 2.0,
-                uniqueHolderNumber: 103333,
-                minters: 2323000,
-                whaleNumber: 10044,
-                rank: 3,
-            },
-            {
-                address: '0x50889b88D800Cd8939Ca6aDB36e9d02Ca259AA06',
-                contracts: [
-                    {
-                        metadata: 'string',
-                        address: 'hexString',
-                        supply: 1,
-                        uniqueHolderNumber: 1,
-                        whaleNumber: 1,
-                    },
-                ],
-                best_srcs: [defaultAvatar, defaultAvatar, defaultAvatar, defaultAvatar], // 随机挑选
-
-                score: 2.0,
-                minters: 2323000,
-
-                uniqueHolderNumber: 10,
-                whaleNumber: 100,
-                rank: 3,
-            },
-            {
-                address: '0xB3ba3E63D62dB825840475C341823215B1a596c3',
-                contracts: [
-                    {
-                        metadata: 'string',
-                        address: 'hexString',
-                        supply: 1,
-                        uniqueHolderNumber: 1,
-                        whaleNumber: 1,
-                    },
-                ],
-                best_srcs: [defaultAvatar, defaultAvatar, defaultAvatar, defaultAvatar], // 随机挑选
-
-                score: 2.0,
-                minters: 2323000,
-
-                uniqueHolderNumber: 10,
-                whaleNumber: 100,
-                rank: 3,
-            },
-        ]);
-        const temp = res?.map((item) => {
-            return {
-                stats: [
-                    { label: 'Collections', value: item.contracts?.length },
-                    // { label: 'Total Gas', value: '$437.25' },
-                    { label: 'Total Mints', value: formatNumberToMK(item.minters) },
-                    { label: 'Holders', value: formatNumberToMK(item.uniqueHolderNumber) },
-                    { label: 'Whales', value: formatNumberToMK(item.whaleNumber) },
-                    // { label: 'Blue Chip Holders', value: '41' },
-                ],
-                address: item.address,
-                rank: item.rank,
-                score: item.score,
-                images: item.best_srcs,
-            };
-        });
-        setList(temp);
+        const data = await Promise.resolve(
+            axios.get('http://8.218.161.115:3036/api/creators/random').then((res) => {
+                const list = res.data;
+                console.log(list);
+                return list.data.map((item) => {
+                    return {
+                        stats: [
+                            { label: 'Collections', value: item.collections?.length },
+                            // { label: 'Total Gas', value: '$437.25' },
+                            { label: 'Total Mints', value: item.minted },
+                            { label: 'Holders', value: item.uniqueHolderNumber },
+                            { label: 'Whales', value: item.whaleNumber },
+                            // { label: 'Blue Chip Holders', value: '41' },
+                        ],
+                        address: item.address,
+                        score: item.score?.toFixed(1)||0,
+                        collections: item.collections,
+                        zora: item.zora,
+                    };
+                });
+            }),
+        );
+        console.log(data);
+        // const temp = data?.map((item) => {
+        //     return {
+        //         stats: [
+        //             { label: 'Collections', value: item.contracts?.length },
+        //             // { label: 'Total Gas', value: '$437.25' },
+        //             { label: 'Total Mints', value: formatNumberToMK(item.minters) },
+        //             { label: 'Holders', value: formatNumberToMK(item.uniqueHolderNumber) },
+        //             { label: 'Whales', value: formatNumberToMK(item.whaleNumber) },
+        //             // { label: 'Blue Chip Holders', value: '41' },
+        //         ],
+        //         address: item.address,
+        //         rank: item.rank,
+        //         score: item.score,
+        //         images: item.best_srcs,
+        //     };
+        // });
+        setList(data);
     }
 
     useEffect(() => {
         const accounts = list.map((item) => item.address);
-        getUsersName(accounts);
+        // getUsersName(accounts);
         getFarcasterInfo(accounts);
         getUsersAvatar(accounts);
     }, [list]);
@@ -254,15 +212,15 @@ export default function HomePage() {
                                 }}
                             />
                             <div
-                                    onClick={() => {
-                                        window.location.href = `/detail/${searchText}`;
-                                    }}
-                                    style={{
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    <IconPlus />
-                                </div>
+                                onClick={() => {
+                                    window.location.href = `/detail/${searchText}`;
+                                }}
+                                style={{
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                <IconPlus />
+                            </div>
                             {/* {!searchText ? (
                                 
                             ) 
@@ -282,11 +240,11 @@ export default function HomePage() {
                     {list?.length ? (
                         <ul className="ap2-list">
                             {list.map((item) => {
-                                const ensname =
-                                    ensNameArr.find((a) => a.address === item.address)?.name || '-';
-                                const ensavatar = ensAvatarArr.find(
-                                    (a) => a.address === item.address,
-                                )?.avatar;
+                                // const ensname =
+                                //     ensNameArr.find((a) => a.address === item.address)?.name || '-';
+                                // const ensavatar = ensAvatarArr.find(
+                                //     (a) => a.address === item.address,
+                                // )?.avatar;
                                 console.log('farcasterUserMap', farcasterUserMap);
                                 const farcasterItem =
                                     farcasterUserMap[String(item.address).toLowerCase()];
@@ -295,10 +253,9 @@ export default function HomePage() {
                                     <li className="ap2-list-item" key={item.address}>
                                         <div className="ap2-list-item-left">
                                             <ProfileCard
-                                                rank={item.rank}
-                                                name={ensname}
+                                                avatarSrc={getZoraSrc(item.zora.avatar)}
                                                 score={item.score}
-                                                avatarSrc={ensavatar}
+                                                name={item.zora.displayName || item.address}
                                                 farcasterName={farcasterName}
                                             />
 
@@ -364,21 +321,14 @@ type ProfileCardProps = {
     name: string;
     score: number;
     avatarSrc: string;
-    rank: number;
     farcasterName: string;
 };
 
-const ProfileCard: React.FC<ProfileCardProps> = ({
-    rank,
-    name,
-    score,
-    avatarSrc,
-    farcasterName,
-}) => {
+const ProfileCard: React.FC<ProfileCardProps> = ({ name, score, avatarSrc, farcasterName }) => {
     return (
         <div className="ap2-profile-card">
             <div className="ap2-profile-left">
-                <span className="ap2-avatar-rank">{rank}</span>
+                {/* <span className="ap2-avatar-rank">{rank}</span> */}
                 <span className="ap2-avatar-container">
                     {avatarSrc ? (
                         <img
