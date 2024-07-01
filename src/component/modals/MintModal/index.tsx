@@ -55,14 +55,12 @@ export default function MintModal({ hide, isShow }: { hide; isShow }) {
     }>();
     const [loading, setLoading] = useState(false);
     async function fetchListData(address?: string) {
-        console.log(address);
         if (address) {
             const res = (
                 await request.get(`/creator/data?owner=${address}`, {
                     timeout: 20000,
                 })
             )?.data;
-            console.log(res);
             setMyData(res.data);
         }
     }

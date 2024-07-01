@@ -38,7 +38,6 @@ const Menu = ({ project }) => {
         if (needReConnected) {
             reconnect(walletConfig, { connectors: [injected()] })
                 .then((re) => {
-                    console.log(re);
                 })
                 .catch((e) => console.log('e', e));
         }

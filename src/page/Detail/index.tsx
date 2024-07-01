@@ -29,7 +29,6 @@ export default function Detail() {
         followers: string | null;
         following: string | null;
     }>();
-    console.log('blockMap', blockMap);
     useEffect(() => {
         fetchCreatorData(owner);
         // fetchUserProfile(owner);
@@ -193,10 +192,8 @@ export default function Detail() {
         if (blockMap[block_number]) {
             return blockMap[block_number];
         }
-        console.log('block_number', block_number);
 
         const block = await getBlock(wagmiConfig, { blockNumber: BigInt(block_number) });
-        console.log('block', block);
         blockMap[block_number] = block;
         setblockMap({ ...blockMap });
         return block;

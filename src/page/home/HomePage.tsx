@@ -39,7 +39,6 @@ export default function HomePage() {
         const searchAccounts = accounts.filter(
             (item) => !Object.keys(farcasterUserMap).includes(item),
         );
-        console.log('searchAccounts', searchAccounts);
         if (searchAccounts.length) {
             const res = await getFarcasterByAddresses(accounts);
             if (res.data) {
@@ -119,7 +118,6 @@ export default function HomePage() {
             axios.get('http://8.218.161.115:3036/api/creators/random').then((res) => {
                 const list = res.data;
                 return list.data.map((item) => {
-                    console.log(item.collections);
                     const tokens = [];
                     for (let coll of item.collections) {
                         for (let t of coll.tokens) {
@@ -137,7 +135,6 @@ export default function HomePage() {
                     //         }
                     //     }))
                     // })
-
                     return {
                         stats: [
                             { label: 'Collections', value: item.collections?.length },
@@ -308,17 +305,19 @@ export default function HomePage() {
                                             </section>
                                         </div>
                                         <div className="ap2-list-item-right">
-                                            <NftImage
-                                                className="ap2-right-img"
-                                                onMouseEnter={() => {
-                                                    setCurrentShowImageId(item.address);
-                                                }}
-                                                onMouseLeave={() => {
-                                                    setCurrentShowImageId('');
-                                                }}
-                                                tokenId={item.tokens?.[0]?.tokenId}
-                                                contract={item.tokens?.[0]?.contract}
-                                            />
+                                            <div style={{ width: '144px', height: '144px' }}>
+                                                <NftImage
+                                                    className="ap2-right-img"
+                                                    onMouseEnter={() => {
+                                                        setCurrentShowImageId(item.address);
+                                                    }}
+                                                    onMouseLeave={() => {
+                                                        setCurrentShowImageId('');
+                                                    }}
+                                                    tokenId={item.tokens?.[0]?.tokenId}
+                                                    contract={item.tokens?.[0]?.contract}
+                                                />
+                                            </div>
                                             {/* <img
                                                 src={item.images?.[0]}
                                                 alt=""
@@ -440,7 +439,6 @@ const ImageModal = ({ images }) => {
         <div className="ap2-image-modal">
             <div className="ap2-image-container">
                 {(images || []).map((item) => {
-                    console.log(item);
                     return (
                         <NftImage
                             tokenId={item.tokenId}
@@ -457,11 +455,14 @@ const ImageModal = ({ images }) => {
 const fetchNftImage = async (contract, tokenId) => {
     if (tokenId && contract) {
         const provider = getProvider(7777777);
-        console.log(contract, tokenId);
         return getNftMetadata(contract, tokenId, provider).then((metadata) => {
             if (metadata) {
-                console.log(metadata, metadata.image);
+                if (!metadata.image) {
+                    console.log('no image', metadata, metadata.image);
+                }
                 return getAPiOrIpfsImgSrc(metadata.image);
+            } else {
+                console.log('No metadata - ', contract, tokenId);
             }
         });
     }
@@ -469,10 +470,13 @@ const fetchNftImage = async (contract, tokenId) => {
 
 const NftImage = (props: { tokenId; contract; className?; onMouseEnter?; onMouseLeave? }) => {
     const { tokenId, contract, className, onMouseEnter, onMouseLeave } = props;
-    const { data: src } = useSWR([contract, tokenId], fetchNftImage, {
+    const { data: src } = useSWR([contract, tokenId, 'fetchNftImage'], fetchNftImage, {
         refreshInterval: 0,
         refreshWhenHidden: false,
     });
+    if (!src) {
+        return <div className="square"></div>;
+    }
     return (
         <img
             src={src || ''}

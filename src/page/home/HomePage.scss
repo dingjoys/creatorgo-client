@@ -350,3 +350,8 @@
         }
     }
 }
+.square {
+    width: 100%;
+    padding-bottom: 100%; /* This maintains a square aspect ratio (height = width) */
+    background-color: #ffffff33; /* Example background color */
+}
