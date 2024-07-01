@@ -6,6 +6,9 @@ import { toast } from 'react-toastify';
 import { ReactComponent as IconClose } from '@/component/icons/svg/close.svg';
 import { formatNumberToMK } from '@/utils/numberUtils';
 import moment from 'moment';
+import axios from 'axios';
+import useSWR from 'swr';
+import { fetchMyAttestion } from '@/component/modules/Menu';
 
 const defaultConfirmModalStyle = {
     overlay: {
@@ -26,6 +29,11 @@ const defaultConfirmModalStyle = {
         backdropFilter: 'blur(16px)',
     },
 };
+
+const request = axios.create({
+    baseURL: 'http://8.218.161.115:3036/api',
+});
+
 export default function MintModal({ hide, isShow }: { hide; isShow }) {
     const { address } = useAccount();
     const [myData, setMyData] = useState<{
@@ -43,36 +51,20 @@ export default function MintModal({ hide, isShow }: { hide; isShow }) {
         minters: number;
         whaleNumber: number;
         rank: number;
+        zora: { avatar };
     }>();
+    const [loading, setLoading] = useState(false);
     async function fetchListData(address?: string) {
-        const res = await Promise.resolve([
-            {
-                address: '0x2c3474Bfe64cD9748be69D24c30cC91639265e68',
-                contracts: [
-                    {
-                        metadata: 'string',
-                        address: 'hexString',
-                        supply: 1,
-                        uniqueHolderNumber: 1,
-                        whaleNumber: 1,
-                    },
-                ],
-                best_srcs: [
-                    'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png',
-                    'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png',
-                    'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png',
-                    'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png',
-                    'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png',
-                ], // 随机挑选
-                score: 2.0,
-                uniqueHolderNumber: 103333,
-                minters: 2323000,
-                whaleNumber: 10044,
-                rank: 3,
-            },
-        ]);
-
-        setMyData(res?.[0]);
+        console.log(address);
+        if (address) {
+            const res = (
+                await request.get(`/creator/data?owner=${address}`, {
+                    timeout: 20000,
+                })
+            )?.data;
+            console.log(res);
+            setMyData(res.data);
+        }
     }
     useEffect(() => {
         if (address) {
@@ -81,7 +73,7 @@ export default function MintModal({ hide, isShow }: { hide; isShow }) {
     }, [address]);
     const leftColumnData: StatItemProps[] = useMemo(
         () => [
-            { label: 'Collections', value: myData?.contracts?.length },
+            { label: 'Collections', value: myData?.contracts?.length || 0 },
             { label: 'Total Mints', value: formatNumberToMK(myData?.minters || 0) },
         ],
         [myData],
@@ -96,9 +88,19 @@ export default function MintModal({ hide, isShow }: { hide; isShow }) {
         ],
         [myData],
     );
-    const imageUrl = myData?.best_srcs?.[0]; //'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png';
-    const score = `${myData?.score}′ / 100`;
+    const imageUrl = myData?.zora?.avatar; //'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png';
+    const score = `${myData?.score || 0}′ / 100`;
     const lastUpdateTime = moment().format('MM/DD/YY');
+
+    const { mutate: mutateMyAttestation } = useSWR(
+        address ? [address, 'fetchMyAttestion'] : null,
+        fetchMyAttestion,
+        {
+            refreshInterval: 0,
+            refreshWhenHidden: false,
+        },
+    );
+
     return (
         <Modal
             appElement={document.getElementById('root')}
@@ -131,8 +133,27 @@ export default function MintModal({ hide, isShow }: { hide; isShow }) {
                         ))}
                     </div>
                 </section>
-                <div className="modal-mint-btn">Mint</div>
-                <div className="modal-mint-footer">built on EAS</div>
+                <div
+                    className={`modal-mint-btn ${address || loading ? '' : 'disabled'}`}
+                    onClick={() => {
+                        if (address && !loading) {
+                            setLoading(true);
+                            axios
+                                .get(`http://8.218.161.115:3036/api/issue?owner=${address}`)
+                                .then(() => {
+                                    fetchMyAttestion(address).then(mutateMyAttestation);
+                                    toast('Attestation has been upload');
+                                    hide();
+                                })
+                                .finally(() => {
+                                    setLoading(false);
+                                });
+                        }
+                    }}
+                >
+                    {loading ? '...' : 'Mint'}
+                </div>
+                <div className="modal-mint-footer">Built on EAS</div>
             </div>
         </Modal>
     );

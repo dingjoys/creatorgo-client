@@ -300,10 +300,15 @@
                 height: 32px;
             }
             .ap2-profile-name {
+                cursor: pointer;
                 color: #fff;
                 margin: 0;
                 align-self: stretch;
+                text-transform: capitalize;
                 font: 400 28px/150% Poppins, -apple-system, Roboto, Helvetica, sans-serif;
+                &:hover {
+                    text-decoration: underline;
+                }
             }
             .ap2-profile-score {
                 color: #fbec50;

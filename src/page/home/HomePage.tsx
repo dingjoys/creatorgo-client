@@ -5,7 +5,7 @@ import { ReactComponent as IconFarcaster } from '@/component/icons/svg/farcaster
 import { ReactComponent as IconDefaultAvatar } from '@/component/icons/svg/default-avatar.svg';
 import './HomePage.scss';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import useIsMobile from '@/core/useMobile';
 import { useEthersSigner } from '@/core/wallet/utils';
@@ -17,6 +17,12 @@ import { isAddress } from 'viem';
 import { getFarcasterByAddresses, getHomeList } from '@/core/home/neynar';
 import { getAdaptiveUsername, getAdaptiveUserAvatar } from '@/utils/userUtils';
 import { formatNumberToMK } from '@/utils/numberUtils';
+import useSWR from 'swr';
+import { useAccount } from 'wagmi';
+import { fetchMyAttestion } from '@/component/modules/Menu';
+import axios from 'axios';
+import { getNftMetadata, getZoraSrc } from '@/core/metadataReader';
+import { getProvider } from '@/utils/web3Utils';
 type Address = `0x${string}`;
 const defaultAvatar =
     'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png';
@@ -24,22 +30,12 @@ const defaultAvatar =
 const getShortAddress = (address) => `${address.substr(0, 6)}...${address.substr(-4)}`;
 export default function HomePage() {
     const { isMobile } = useIsMobile();
-    const signer = useEthersSigner();
-    const [searchText, setsearchText] = useState('');
-    const [ensNameArr, setEnsNameArr] = useState<{ name: string; address: string }[]>([]);
-    const [ensAvatarArr, setEnsAvatarArr] = useState<{ address: string; avatar: string }[]>([]);
-    const [list, setList] = useState<
-        {
-            stats: { label: string; value: string | number }[];
-            address: string;
-            // rank: number;
-            username: string;
-            avatar: string;
-            score: number;
-            images: string[];
-        }[]
-    >([]);
+    const [searchText, setSearchText] = useState('');
+    const [list, setList] = useState<any[]>([]);
     const [farcasterUserMap, setFarcasterUserMap] = useState({});
+    // const [tokenInfos, setTokenInfos] = useState<{ contract; token_id; metadata }[]>([]);
+    const tokenInfos = useRef<{ contract; tokenId; metadata }[]>([]);
+
     async function getFarcasterInfo(accounts: string[]) {
         const searchAccounts = accounts.filter(
             (item) => !Object.keys(farcasterUserMap).includes(item),
@@ -52,73 +48,122 @@ export default function HomePage() {
             }
         }
     }
-    function getUsersName(accounts: string[]) {
-        return Promise.all(
-            accounts
-                .filter((item) => !ensNameArr.map((a) => a.address).includes(item))
-                .map(async (account) => {
-                    const name = await getAdaptiveUsername(account);
-                    return {
-                        address: account,
-                        name: isAddress(name) ? getShortAddress(account) : name,
-                    };
-                }),
-        ).then((result) => {
-            setEnsNameArr(result);
-        });
-    }
-    function getUsersAvatar(accounts: string[]) {
-        return Promise.all(
-            accounts
-                .filter((item) => !ensAvatarArr.map((a) => a.address).includes(item))
-                .map(async (account) => {
-                    const avatar = await getAdaptiveUserAvatar(account);
-                    return {
-                        address: account,
-                        avatar: avatar,
-                    };
-                }),
-        ).then((result) => {
-            setEnsAvatarArr(result);
-        });
-    }
+
+    useEffect(() => {
+        const provider = getProvider(7777777);
+        const func = async () => {
+            if (list?.length) {
+                for (let item of list) {
+                    for (let collection of item.collections) {
+                        for (let token of collection.tokens) {
+                            const metadata = await getNftMetadata(
+                                collection.contract,
+                                token.tokenId,
+                                provider,
+                            );
+                            console.log(collection.contract, token.tokenId);
+                            tokenInfos.current = tokenInfos.current
+                                .filter((i) => {
+                                    return (
+                                        i.contract != collection.contract ||
+                                        i.tokenId != token.tokenId
+                                    );
+                                })
+                                .concat({
+                                    contract: collection.contract,
+                                    tokenId: token.tokenId,
+                                    metadata,
+                                });
+                        }
+                    }
+                }
+            }
+        };
+        func();
+    }, [list]);
+    console.log(tokenInfos.current);
+    // function getUsersName(accounts: string[]) {
+    //     return Promise.all(
+    //         accounts
+    //             .filter((item) => !ensNameArr.map((a) => a.address).includes(item))
+    //             .map(async (account) => {
+    //                 const name = await getAdaptiveUsername(account);
+    //                 return {
+    //                     address: account,
+    //                     name: isAddress(name) ? getShortAddress(account) : name,
+    //                 };
+    //             }),
+    //     ).then((result) => {
+    //         setEnsNameArr(result);
+    //     });
+    // }
+    // function getUsersAvatar(accounts: string[]) {
+    //     return Promise.all(
+    //         accounts
+    //             .filter((item) => !ensAvatarArr.map((a) => a.address).includes(item))
+    //             .map(async (account) => {
+    //                 const avatar = await getAdaptiveUserAvatar(account);
+    //                 return {
+    //                     address: account,
+    //                     avatar: avatar,
+    //                 };
+    //             }),
+    //     ).then((result) => {
+    //         setEnsAvatarArr(result);
+    //     });
+    // }
     useEffect(() => {
         fetchListData();
     }, []);
-    async function fetchListData(keywork?: string) {
-        const data = await getHomeList();
 
-        const temp = data?.map((item) => {
-            return {
-                stats: [
-                    { label: 'Collections', value: item.collections?.length },
-                    // { label: 'Total Gas', value: '$437.25' },
-                    { label: 'Mints', value: formatNumberToMK(item.recentMints?.length) },
-                    { label: 'Minted', value: formatNumberToMK(item.totalMint) },
-                    { label: 'Holders', value: formatNumberToMK(item.uniqueHolderNumber) },
-                    { label: 'Whales', value: formatNumberToMK(item.whaleNumber) },
-                    // { label: 'Blue Chip Holders', value: '41' },
-                ],
-                address: item.zora?.address,
-                username: item.zora?.username,
-                addressShort: item.zora?.addressShort,
-                avatar:
-                    (item.zora?.avatar?.indexOf('http') == -1
-                        ? `https://zora.co${item.zora?.avatar}`
-                        : item.zora?.avatar) || defaultAvatar,
-                // rank: item.rank,
-                score: item.score,
-                images: [],
-            };
-        });
-        setList(temp);
+    async function fetchListData(keywork?: string) {
+        const data = await Promise.resolve(
+            axios.get('http://8.218.161.115:3036/api/creators/random').then((res) => {
+                const list = res.data;
+                console.log(list);
+                return list.data.map((item) => {
+                    return {
+                        stats: [
+                            { label: 'Collections', value: item.collections?.length },
+                            // { label: 'Total Gas', value: '$437.25' },
+                            { label: 'Mints', value: formatNumberToMK(item.recentMints?.length) },
+                            { label: 'Minted', value: formatNumberToMK(item.totalMint) },
+                            { label: 'Holders', value: formatNumberToMK(item.uniqueHolderNumber) },
+                            { label: 'Whales', value: formatNumberToMK(item.whaleNumber) },
+                            // { label: 'Blue Chip Holders', value: '41' },
+                        ],
+                        address: item.address,
+                        score: item.score?.toFixed(1) || 0,
+                        collections: item.collections,
+                        zora: item.zora,
+                    };
+                });
+            }),
+        );
+        // const temp = data?.map((item) => {
+        //     return {
+        //         stats: [
+        //             { label: 'Collections', value: item.contracts?.length },
+        //             // { label: 'Total Gas', value: '$437.25' },
+        //             { label: 'Total Mints', value: formatNumberToMK(item.minters) },
+        //             { label: 'Holders', value: formatNumberToMK(item.uniqueHolderNumber) },
+        //             { label: 'Whales', value: formatNumberToMK(item.whaleNumber) },
+        //             // { label: 'Blue Chip Holders', value: '41' },
+        //         ],
+        //         address: item.address,
+        //         rank: item.rank,
+        //         score: item.score,
+        //         images: item.best_srcs,
+        //     };
+        // });
+        setList(data);
     }
 
     useEffect(() => {
-        const accounts = list.map((item) => item.address);
-        getUsersName(accounts);
-        getFarcasterInfo(accounts);
-        getUsersAvatar(accounts);
+        // const accounts = list.map((item) => item.address);
+        // getUsersName(accounts);
+        // getFarcasterInfo(accounts);
+        // getUsersAvatar(accounts);
     }, [list]);
 
     const [currentShowImageId, setCurrentShowImageId] = useState('');
@@ -129,6 +174,17 @@ export default function HomePage() {
 
     const [isShowModal, setShowModal] = useState(false);
     const [isFollowed, setisFollowed] = useState(false);
+
+    const { address } = useAccount();
+    const { data: myAttestation, mutate: mutateMyAttestation } = useSWR(
+        address ? [address, 'fetchMyAttestion'] : null,
+        fetchMyAttestion,
+        {
+            refreshInterval: 0,
+            refreshWhenHidden: false,
+        },
+    );
+
     return (
         <div className={`artela-page ${isMobile ? 'is-mobile' : ''}`}>
             <section className="artela-page-1">
@@ -149,16 +205,27 @@ export default function HomePage() {
                     <div className="apm-mint">
                         <IconArrow />
                         Click to
-                        <div className="apm-mint-btn" onClick={() => setShowModal(true)}>
-                            attest your power
-                        </div>
+                        {address ? (
+                            <div className="apm-mint-btn" onClick={() => setShowModal(true)}>
+                                {myAttestation?.length ? 'attest your power' : 'update your power'}
+                            </div>
+                        ) : (
+                            <div
+                                className="apm-mint-btn"
+                                onClick={() =>
+                                    document.getElementById('connect-wallet-button').click()
+                                }
+                            >
+                                connect your account
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>
             <section className="artela-page-2">
                 <div className="ap2-container">
                     <div className="ap2-header">
-                        <div className="ap2-header-check">
+                        {/* <div className="ap2-header-check">
                             <Checkbox
                                 size="24px"
                                 shape="square"
@@ -168,42 +235,51 @@ export default function HomePage() {
                                 }}
                             />
                             Following
-                        </div>
+                        </div> */}
                         <div className={`ap2-search ${searchText ? 'highlight' : ''}`}>
                             <input
                                 className="ap2-search-input"
                                 value={searchText}
                                 placeholder="Search Creators"
                                 onChange={(e) => {
-                                    setsearchText(e.target?.value);
-                                    foo(e.target?.value);
+                                    setSearchText(e.target?.value);
+                                    // foo(e.target?.value);
                                 }}
                             />
-                            {!searchText ? (
+                            <div
+                                onClick={() => {
+                                    window.location.href = `/detail/${searchText}`;
+                                }}
+                                style={{
+                                    cursor: 'pointer',
+                                }}
+                            >
                                 <IconPlus />
-                            ) : (
+                            </div>
+                            {/* {!searchText ? (
+                                
+                            ) 
+                            : (
                                 <IconClose
                                     style={{
                                         cursor: 'pointer',
                                     }}
                                     onClick={() => {
-                                        setsearchText('');
+                                        setSearchText('');
                                     }}
                                 />
-                            )}
+                            )} */}
                         </div>
                     </div>
 
                     {list?.length ? (
                         <ul className="ap2-list">
-                            {list.map((item, index) => {
-                                const ensname =
-                                    item.username ||
-                                    ensNameArr.find((a) => a.address === item.address)?.name ||
-                                    '-';
-                                const ensavatar =
-                                    item.avatar ||
-                                    ensAvatarArr.find((a) => a.address === item.address)?.avatar;
+                            {list.map((item) => {
+                                // const ensname =
+                                //     ensNameArr.find((a) => a.address === item.address)?.name || '-';
+                                // const ensavatar = ensAvatarArr.find(
+                                //     (a) => a.address === item.address,
+                                // )?.avatar;
                                 const farcasterItem =
                                     farcasterUserMap[String(item.address).toLowerCase()];
                                 const farcasterName = farcasterItem?.[0]?.username;
@@ -211,10 +287,13 @@ export default function HomePage() {
                                     <li className="ap2-list-item" key={item.address}>
                                         <div className="ap2-list-item-left">
                                             <ProfileCard
-                                                rank={index + 1}
-                                                name={ensname}
+                                                address={item.address}
+                                                avatarSrc={getZoraSrc(item.zora.avatar)}
                                                 score={item.score}
-                                                avatarSrc={ensavatar}
+                                                name={
+                                                    item.zora.displayName ||
+                                                    getShortAddress(item.address)
+                                                }
                                                 farcasterName={farcasterName}
                                             />
 
@@ -280,12 +359,12 @@ type ProfileCardProps = {
     name: string;
     score: number;
     avatarSrc: string;
-    rank: number;
     farcasterName: string;
+    address;
 };
 
 const ProfileCard: React.FC<ProfileCardProps> = ({
-    rank,
+    address,
     name,
     score,
     avatarSrc,
@@ -294,7 +373,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     return (
         <div className="ap2-profile-card">
             <div className="ap2-profile-left">
-                <span className="ap2-avatar-rank">{rank}</span>
+                {/* <span className="ap2-avatar-rank">{rank}</span> */}
                 <span className="ap2-avatar-container">
                     {avatarSrc ? (
                         <img
@@ -318,7 +397,14 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
                 </span>
             </div>
 
-            <h2 className="ap2-profile-name">{name}</h2>
+            <h2
+                className="ap2-profile-name"
+                onClick={() => {
+                    window.location.href = `/detail/${address}`;
+                }}
+            >
+                {name}
+            </h2>
             <p className="ap2-profile-score">
                 <span className="ap2-score-value">{score}</span>′
             </p>
@@ -342,9 +428,10 @@ const ImageModal = ({ images }) => {
     return (
         <div className="ap2-image-modal">
             <div className="ap2-image-container">
-                {images.map((item) => {
-                    return <img src={item} alt="" className="ap2-image-modal-img" key={item} />;
-                })}
+                {images ||
+                    [].map((item) => {
+                        return <img src={item} alt="" className="ap2-image-modal-img" key={item} />;
+                    })}
             </div>
         </div>
     );
