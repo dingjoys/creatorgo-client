@@ -341,18 +341,60 @@
     .detail-collection {
         width: 100%;
         .detail-image-gallery {
-            display: flex;
-            gap: 15px;
+            position: relative;
+            .explore-scrollbar-wrapper {
+                position: absolute;
+                height: 88px;
+                width: 100%;
+            }
             font-size: 12px;
             color: #fff;
             font-weight: 400;
             line-height: 150%;
-        }
-        @media (max-width: 991px) {
-            .detail-image-gallery {
-                flex-wrap: wrap;
+            max-width: calc(100vw - 400px);
+            .detail-image-gallery-warpper {
+                overflow: hidden;
+            }
+            .detail-image-gallery-inner {
+                width: max-content;
+                display: flex;
+                display: flex;
+                gap: 15px;
+                transition: all 0.5s;
+            }
+            &:hover {
+                .explore-scrollbar-prev,
+                .explore-scrollbar-next {
+                    visibility: visible;
+                }
+            }
+            .explore-scrollbar-prev,
+            .explore-scrollbar-next {
+                display: flex;
+                visibility: hidden;
+                width: 32px;
+                height: 32px;
+                justify-content: center;
+                align-items: center;
+                position: absolute;
+
+                top: 58%;
+                transform: translateY(-50%);
+                z-index: 1;
+                border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.4);
+                background: rgba(12, 12, 16, 0.4);
+                backdrop-filter: blur(10.000000953674316px);
+                cursor: pointer;
+            }
+            .explore-scrollbar-prev {
+                left: -28px;
+            }
+            .explore-scrollbar-next {
+                right: -28px;
             }
         }
+
         .detail-gallery-item {
             display: flex;
             flex-direction: column;
