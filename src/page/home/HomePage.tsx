@@ -17,6 +17,9 @@ import { isAddress } from 'viem';
 import { getFarcasterByAddresses } from '@/core/home/neynar';
 import { getAdaptiveUsername, getAdaptiveUserAvatar } from '@/utils/userUtils';
 import { formatNumberToMK } from '@/utils/numberUtils';
+import useSWR from 'swr';
+import { useAccount } from 'wagmi';
+import { fetchMyAttestion } from '@/component/modules/Menu';
 type Address = `0x${string}`;
 const defaultAvatar =
     'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png';
@@ -178,6 +181,17 @@ export default function HomePage() {
 
     const [isShowModal, setShowModal] = useState(false);
     const [isFollowed, setisFollowed] = useState(false);
+
+    const { address } = useAccount();
+    const { data: myAttestation, mutate: mutateMyAttestation } = useSWR(
+        address ? [address, 'fetchMyAttestion'] : null,
+        fetchMyAttestion,
+        {
+            refreshInterval: 0,
+            refreshWhenHidden: false,
+        },
+    );
+
     return (
         <div className={`artela-page ${isMobile ? 'is-mobile' : ''}`}>
             <section className="artela-page-1">
@@ -198,9 +212,20 @@ export default function HomePage() {
                     <div className="apm-mint">
                         <IconArrow />
                         Click to
-                        <div className="apm-mint-btn" onClick={() => setShowModal(true)}>
-                            attest your power
-                        </div>
+                        {address ? (
+                            <div className="apm-mint-btn" onClick={() => setShowModal(true)}>
+                                {myAttestation?.length ? 'attest your power' : 'update your power'}
+                            </div>
+                        ) : (
+                            <div
+                                className="apm-mint-btn"
+                                onClick={() =>
+                                    document.getElementById('connect-wallet-button').click()
+                                }
+                            >
+                                connect your account
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>

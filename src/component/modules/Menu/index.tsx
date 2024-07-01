@@ -8,14 +8,27 @@ import './index.scss';
 import walletConfig from '@/walletConfig';
 import { injected } from 'wagmi/connectors';
 import { reconnect } from '@wagmi/core';
-import { useDisconnect } from 'wagmi';
+import { useAccount, useDisconnect } from 'wagmi';
 import useIsMobile from '@/core/useMobile';
 import MintModal from '@/component/modals/MintModal';
+import axios from 'axios';
+import useSWR from 'swr';
 
 const projectLogoMap = {
     'gas-hero': 'https://oss.metopia.xyz/imgs/hero/logo.png',
     artela: 'https://oss.metopia.xyz/imgs/metopia-logo-text.png',
     vote: 'https://oss.metopia.xyz/imgs/vote/Ethereum-Guatemala.png',
+};
+
+export const fetchMyAttestion = (owner) => {
+    return axios
+        .post('https://base-sepolia.easscan.org/graphql', {
+            query: 'query ExampleQuery($where: AttestationWhereInput) { attestations(  where: $where) { id expirationTime data decodedDataJson recipient} }',
+            variables: {
+                where: { attester: { equals: '0x3cbAee4F65B64082FD3a5B0D78638Ee11A29A31A' } },
+            },
+        })
+        .then((d) => d.data.data?.attestations);
 };
 
 const Menu = ({ project }) => {
@@ -33,9 +46,23 @@ const Menu = ({ project }) => {
     const projectLogo = useMemo(() => {
         return projectLogoMap[project] || 'https://oss.metopia.xyz/imgs/metopia-logo-text.png';
     }, [project]);
-    const [power, setPower] = useState(0);
+    const [score, setScore] = useState(undefined);
     const [isShowModal, setShowModal] = useState(false);
 
+    const { address } = useAccount();
+    const { data: myAttestation } = useSWR(
+        address ? [address, 'fetchMyAttestion'] : null,
+        fetchMyAttestion,
+        {
+            refreshInterval: 0,
+            refreshWhenHidden: false,
+        },
+    );
+    useEffect(() => {
+        if (myAttestation?.length) {
+            setScore(parseInt(BigInt(myAttestation[0].data).toString()));
+        }
+    }, [myAttestation]);
     return (
         <div className={`menu-container`}>
             <div className="wrapper">
@@ -70,10 +97,17 @@ const Menu = ({ project }) => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            {power ? (
-                                                <div className="menu-attest-value">
+                                            {score != undefined ? (
+                                                <div
+                                                    className="menu-attest-value"
+                                                    onClick={() => {
+                                                        window.open(
+                                                            `https://base-sepolia.easscan.org/attestation/view/${myAttestation[0].id}`,
+                                                        );
+                                                    }}
+                                                >
                                                     <span className="menu-attest-line"></span>
-                                                    {power}
+                                                    {score}
                                                 </div>
                                             ) : (
                                                 <div
@@ -88,6 +122,7 @@ const Menu = ({ project }) => {
                                         <div
                                             onClick={openConnectModal}
                                             className="connect-wallet-button"
+                                            id="connect-wallet-button"
                                         >
                                             <IconArrow></IconArrow>
                                             Connect Account

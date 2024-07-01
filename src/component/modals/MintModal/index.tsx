@@ -7,6 +7,8 @@ import { ReactComponent as IconClose } from '@/component/icons/svg/close.svg';
 import { formatNumberToMK } from '@/utils/numberUtils';
 import moment from 'moment';
 import axios from 'axios';
+import useSWR from 'swr';
+import { fetchMyAttestion } from '@/component/modules/Menu';
 
 const defaultConfirmModalStyle = {
     overlay: {
@@ -86,10 +88,19 @@ export default function MintModal({ hide, isShow }: { hide; isShow }) {
         ],
         [myData],
     );
-    console.log(myData);
     const imageUrl = myData?.zora?.avatar; //'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png';
     const score = `${myData?.score || 0}′ / 100`;
     const lastUpdateTime = moment().format('MM/DD/YY');
+
+    const { mutate: mutateMyAttestation } = useSWR(
+        address ? [address, 'fetchMyAttestion'] : null,
+        fetchMyAttestion,
+        {
+            refreshInterval: 0,
+            refreshWhenHidden: false,
+        },
+    );
+
     return (
         <Modal
             appElement={document.getElementById('root')}
@@ -130,7 +141,8 @@ export default function MintModal({ hide, isShow }: { hide; isShow }) {
                             axios
                                 .get(`http://8.218.161.115:3036/api/issue?owner=${address}`)
                                 .then(() => {
-                                    toast('Attestation Mint Done');
+                                    fetchMyAttestion(address).then(mutateMyAttestation);
+                                    toast('Attestation has been upload');
                                     hide();
                                 })
                                 .finally(() => {
@@ -141,7 +153,7 @@ export default function MintModal({ hide, isShow }: { hide; isShow }) {
                 >
                     {loading ? '...' : 'Mint'}
                 </div>
-                <div className="modal-mint-footer">built on EAS</div>
+                <div className="modal-mint-footer">Built on EAS</div>
             </div>
         </Modal>
     );
