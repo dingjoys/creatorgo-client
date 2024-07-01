@@ -213,7 +213,7 @@ export default function Detail() {
                 );
                 console.log('topMinters', recentMintsTokenInfos.current, token);
                 return {
-                    imageSrc: token?.metadata?.image || defaultAvatar,
+                    imageSrc: token?.metadata?.image,
                     title: `${token?.metadata?.name} #${item.token_id}`,
                     mintedBy: item.minter,
                     blockNumber: item.block_number,
@@ -236,7 +236,7 @@ export default function Detail() {
                     ? collectionMetadata?.image
                     : tokenMedata?.metadata?.image;
                 return {
-                    src: src || defaultAvatar,
+                    src: src,
                     title: title,
                 };
             }) || []
@@ -415,7 +415,7 @@ export default function Detail() {
                                 </div>
                             </section>
                         </div>
-                        <div>
+                        {/* <div>
                             <div className="di-title">
                                 Farcaster minters
                                 <div className="di-subtitle">Top minters</div>
@@ -432,7 +432,7 @@ export default function Detail() {
                                     />
                                 ))}
                             </div>
-                        </div>
+                        </div> */}
                         <div>
                             <div className="di-title">Mint history</div>
                             <section className="nft-wrapper">

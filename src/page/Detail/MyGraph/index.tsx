@@ -94,7 +94,7 @@ const NodeSlot: React.FC<RGNodeSlotProps> = ({ node }) => {
             </div>
         );
     }
-    return node.data?.image ? (
+    return node.data?.image || node.data.imageWidth ? (
         <img
             alt=""
             data-tooltip-id="my-graph"
@@ -172,7 +172,7 @@ const MyGraph = ({
                         if (hash) {
                             avatar = `https://metopia.quicknode-ipfs.com/ipfs/${hash}`;
                         }
-                        const imageWidthRandom = Math.min(300 * Math.random(), 150);
+                        const imageWidthRandom = Math.min(200 * Math.random(), 100);
 
                         return {
                             id: String(index + 1),
@@ -182,7 +182,7 @@ const MyGraph = ({
                                 minterDetail: item.mintfun?.details,
                                 name,
                                 collectionMetadata: item.collectionMetadata,
-                                image: avatar || defaultAvatar,
+                                image: avatar,
                                 imageWidth: imageWidthRandom + 'px',
                             },
                         };
@@ -254,7 +254,7 @@ const MyGraph = ({
         layout: {
             layoutName: 'center',
             maxLayoutTimes: 3000,
-            levelDistance: '200, 100',
+            levelDistance: '300, 300',
             layoutClassName: 'seeks-layout-force',
         },
         defaultExpandHolderPosition: 'right',
