@@ -25,7 +25,12 @@ export const fetchMyAttestion = (owner) => {
         .post('https://base-sepolia.easscan.org/graphql', {
             query: 'query ExampleQuery($where: AttestationWhereInput) { attestations(  where: $where) { id expirationTime data decodedDataJson recipient} }',
             variables: {
-                where: { attester: { equals: '0x3cbAee4F65B64082FD3a5B0D78638Ee11A29A31A' } },
+                where: {
+                    attester: {
+                        equals: '0x3cbAee4F65B64082FD3a5B0D78638Ee11A29A31A',
+                    },
+                    recipient: { equals: owner },
+                },
             },
         })
         .then((d) => d.data.data?.attestations);
@@ -37,15 +42,14 @@ const Menu = ({ project }) => {
         const needReConnected = window.localStorage.getItem('isConnected');
         if (needReConnected) {
             reconnect(walletConfig, { connectors: [injected()] })
-                .then((re) => {
-                })
+                .then((re) => {})
                 .catch((e) => console.log('e', e));
         }
     }, []);
     const projectLogo = useMemo(() => {
         return projectLogoMap[project] || 'https://oss.metopia.xyz/imgs/metopia-logo-text.png';
     }, [project]);
-    const [score, setScore] = useState(undefined);
+    const [score, setScore] = useState(-1);
     const [isShowModal, setShowModal] = useState(false);
 
     const { address } = useAccount();
@@ -62,6 +66,7 @@ const Menu = ({ project }) => {
             setScore(parseInt(BigInt(myAttestation[0].data).toString()));
         }
     }, [myAttestation]);
+
     return (
         <div className={`menu-container`}>
             <div className="wrapper">
@@ -96,7 +101,7 @@ const Menu = ({ project }) => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            {score != undefined ? (
+                                            {score != -1 ? (
                                                 <div
                                                     className="menu-attest-value"
                                                     onClick={() => {

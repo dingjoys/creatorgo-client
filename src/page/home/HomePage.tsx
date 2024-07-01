@@ -34,7 +34,6 @@ export default function HomePage() {
     const [list, setList] = useState<any[]>([]);
     const [farcasterUserMap, setFarcasterUserMap] = useState({});
     // const [tokenInfos, setTokenInfos] = useState<{ contract; token_id; metadata }[]>([]);
-    const tokenInfos = useRef<{ contract; tokenId; metadata }[]>([]);
     async function getFarcasterInfo(accounts: string[]) {
         const searchAccounts = accounts.filter(
             (item) => !Object.keys(farcasterUserMap).includes(item),
@@ -139,7 +138,7 @@ export default function HomePage() {
                         stats: [
                             { label: 'Collections', value: item.collections?.length },
                             // { label: 'Total Gas', value: '$437.25' },
-                            { label: 'Total Mints', value: item.minted },
+                            { label: 'Total Mints', value: item.totalMint },
                             { label: 'Holders', value: item.uniqueHolderNumber },
                             { label: 'Whales', value: item.whaleNumber },
                             // { label: 'Blue Chip Holders', value: '41' },

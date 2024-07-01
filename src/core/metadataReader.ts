@@ -134,7 +134,6 @@ export const getNftMetadata = async (contract, tokenId: BigNumberish, provider) 
                 return result;
             }
         } catch (e2) {
-
             try {
                 const altContractObj = new ethers.Contract(contract, [{
                     "inputs": [
