@@ -22,7 +22,7 @@ export function getFarcasterByAddresses(addresses: string[]) {
 }
 
 const request = axios.create({
-    baseURL: 'http://8.218.161.115:3036/api',
+    baseURL: 'https://creatorgo.metopia.xyz/api',
 });
 export interface CollectionItem {
     metadata: {

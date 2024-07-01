@@ -31,7 +31,7 @@ const defaultConfirmModalStyle = {
 };
 
 const request = axios.create({
-    baseURL: 'http://8.218.161.115:3036/api',
+    baseURL: 'https://creatorgo.metopia.xyz/api',
 });
 
 export default function MintModal({ hide, isShow }: { hide; isShow }) {
@@ -55,14 +55,12 @@ export default function MintModal({ hide, isShow }: { hide; isShow }) {
     }>();
     const [loading, setLoading] = useState(false);
     async function fetchListData(address?: string) {
-        console.log(address);
         if (address) {
             const res = (
                 await request.get(`/creator/data?owner=${address}`, {
                     timeout: 20000,
                 })
             )?.data;
-            console.log(res);
             setMyData(res.data);
         }
     }
@@ -139,7 +137,7 @@ export default function MintModal({ hide, isShow }: { hide; isShow }) {
                         if (address && !loading) {
                             setLoading(true);
                             axios
-                                .get(`http://8.218.161.115:3036/api/issue?owner=${address}`)
+                                .get(`https://creatorgo.metopia.xyz/api/issue?owner=${address}`)
                                 .then(() => {
                                     fetchMyAttestion(address).then(mutateMyAttestation);
                                     toast('Attestation has been upload');

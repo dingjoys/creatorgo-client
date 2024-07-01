@@ -106,6 +106,14 @@ export const fetchAPiOrIpfsData = (uri) => {
     }
 }
 
+export const getAPiOrIpfsImgSrc = (uri) => {
+    if (uri.startsWith("ipfs://")) {
+        return `${ipfsHead}/${uri.replace("ipfs://", "")}`
+    } else {
+        return uri
+    }
+}
+
 export const getNftMetadatas = async (contract, tokenIds: BigNumberish[], provider) => {
     return Promise.all(tokenIds.map(tokenId => getNftMetadata(contract, tokenId, provider)))
 }
@@ -125,9 +133,40 @@ export const getNftMetadata = async (contract, tokenId: BigNumberish, provider) 
                 const result = await fetchAPiOrIpfsData(uri)
                 return result;
             }
-
         } catch (e2) {
-            return null
+            try {
+                const altContractObj = new ethers.Contract(contract, [{
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "tokenId",
+                            "type": "uint256"
+                        }, {
+                            "internalType": "uint256",
+                            "name": "Block",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "uri",
+                    "outputs": [
+                        {
+                            "internalType": "string",
+                            "name": "",
+                            "type": "string"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }], provider)
+
+                const uri = await altContractObj.uri(tokenId, await provider.getBlockNumber())
+                if (uri) {
+                    const result = await fetchAPiOrIpfsData(uri)
+                    return result;
+                }
+            } catch (e) {
+                return null
+            }
         }
     }
 }

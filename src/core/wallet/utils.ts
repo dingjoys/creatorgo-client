@@ -64,7 +64,6 @@ export function useEthersSigner({ chainId }: { chainId?: number | undefined } = 
         const fetchData = async () => {
             try {
                 const signer = await getEthersSigner(walletConfig, { chainId });
-                console.log(signer)
                 setSigner(signer);
             } catch (error) {
                 console.error('Error fetching ethers signer:', error);
