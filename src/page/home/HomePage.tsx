@@ -114,7 +114,7 @@ export default function HomePage() {
 
     async function fetchListData(keywork?: string) {
         const data = await Promise.resolve(
-            axios.get('http://8.218.161.115:3036/api/creators/random').then((res) => {
+            axios.get('https://creatorgo.metopia.xyz/api/creators/random').then((res) => {
                 const list = res.data;
                 return list.data.map((item) => {
                     const tokens = [];

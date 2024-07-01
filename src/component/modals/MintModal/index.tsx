@@ -31,7 +31,7 @@ const defaultConfirmModalStyle = {
 };
 
 const request = axios.create({
-    baseURL: 'http://8.218.161.115:3036/api',
+    baseURL: 'https://creatorgo.metopia.xyz/api',
 });
 
 export default function MintModal({ hide, isShow }: { hide; isShow }) {
@@ -137,7 +137,7 @@ export default function MintModal({ hide, isShow }: { hide; isShow }) {
                         if (address && !loading) {
                             setLoading(true);
                             axios
-                                .get(`http://8.218.161.115:3036/api/issue?owner=${address}`)
+                                .get(`https://creatorgo.metopia.xyz/api/issue?owner=${address}`)
                                 .then(() => {
                                     fetchMyAttestion(address).then(mutateMyAttestation);
                                     toast('Attestation has been upload');
