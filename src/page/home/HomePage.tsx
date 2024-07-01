@@ -21,7 +21,7 @@ import useSWR from 'swr';
 import { useAccount } from 'wagmi';
 import { fetchMyAttestion } from '@/component/modules/Menu';
 import axios from 'axios';
-import { getNftMetadata, getZoraSrc } from '@/core/metadataReader';
+import { getAPiOrIpfsImgSrc, getNftMetadata, getZoraSrc } from '@/core/metadataReader';
 import { getProvider } from '@/utils/web3Utils';
 type Address = `0x${string}`;
 const defaultAvatar =
@@ -35,7 +35,6 @@ export default function HomePage() {
     const [farcasterUserMap, setFarcasterUserMap] = useState({});
     // const [tokenInfos, setTokenInfos] = useState<{ contract; token_id; metadata }[]>([]);
     const tokenInfos = useRef<{ contract; tokenId; metadata }[]>([]);
-
     async function getFarcasterInfo(accounts: string[]) {
         const searchAccounts = accounts.filter(
             (item) => !Object.keys(farcasterUserMap).includes(item),
@@ -49,39 +48,38 @@ export default function HomePage() {
         }
     }
 
-    useEffect(() => {
-        const provider = getProvider(7777777);
-        const func = async () => {
-            if (list?.length) {
-                for (let item of list) {
-                    for (let collection of item.collections) {
-                        for (let token of collection.tokens) {
-                            const metadata = await getNftMetadata(
-                                collection.contract,
-                                token.tokenId,
-                                provider,
-                            );
-                            console.log(collection.contract,token.tokenId)
-                            tokenInfos.current = tokenInfos.current
-                                .filter((i) => {
-                                    return (
-                                        i.contract != collection.contract ||
-                                        i.tokenId != token.tokenId
-                                    );
-                                })
-                                .concat({
-                                    contract: collection.contract,
-                                    tokenId: token.tokenId,
-                                    metadata,
-                                });
-                        }
-                    }
-                }
-            }
-        };
-        func();
-    }, [list]);
-    console.log(tokenInfos.current);
+    // useEffect(() => {
+    //     const provider = getProvider(7777777);
+    //     const func = async () => {
+    //         if (list?.length) {
+    //             for (let item of list) {
+    //                 for (let collection of item.collections) {
+    //                     for (let token of collection.tokens) {
+    //                         const metadata = await getNftMetadata(
+    //                             collection.contract,
+    //                             token.tokenId,
+    //                             provider,
+    //                         );
+    //                         tokenInfos.current = tokenInfos.current
+    //                             .filter((i) => {
+    //                                 return (
+    //                                     i.contract != collection.contract ||
+    //                                     i.tokenId != token.tokenId
+    //                                 );
+    //                             })
+    //                             .concat({
+    //                                 contract: collection.contract,
+    //                                 tokenId: token.tokenId,
+    //                                 metadata,
+    //                             });
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     };
+    //     func();
+    // }, [list]);
+    // console.log(tokenInfos.current);
     // function getUsersName(accounts: string[]) {
     //     return Promise.all(
     //         accounts
@@ -120,8 +118,26 @@ export default function HomePage() {
         const data = await Promise.resolve(
             axios.get('http://8.218.161.115:3036/api/creators/random').then((res) => {
                 const list = res.data;
-                console.log(list);
                 return list.data.map((item) => {
+                    console.log(item.collections);
+                    const tokens = [];
+                    for (let coll of item.collections) {
+                        for (let t of coll.tokens) {
+                            tokens.push({
+                                tokenId: t.tokenId,
+                                contract: coll.contract,
+                            });
+                        }
+                    }
+                    // const tokens = item.collections.flatMap(coll=>{
+                    //     return coll.flatMap(coll.tokens.map(t=>{
+                    //         return {
+                    //             tokenId:t.tokenId,
+                    //             contract:coll.contract
+                    //         }
+                    //     }))
+                    // })
+
                     return {
                         stats: [
                             { label: 'Collections', value: item.collections?.length },
@@ -133,28 +149,13 @@ export default function HomePage() {
                         ],
                         address: item.address,
                         score: item.score?.toFixed(1) || 0,
-                        collections: item.collections,
+                        tokens,
                         zora: item.zora,
                     };
                 });
             }),
         );
-        // const temp = data?.map((item) => {
-        //     return {
-        //         stats: [
-        //             { label: 'Collections', value: item.contracts?.length },
-        //             // { label: 'Total Gas', value: '$437.25' },
-        //             { label: 'Total Mints', value: formatNumberToMK(item.minters) },
-        //             { label: 'Holders', value: formatNumberToMK(item.uniqueHolderNumber) },
-        //             { label: 'Whales', value: formatNumberToMK(item.whaleNumber) },
-        //             // { label: 'Blue Chip Holders', value: '41' },
-        //         ],
-        //         address: item.address,
-        //         rank: item.rank,
-        //         score: item.score,
-        //         images: item.best_srcs,
-        //     };
-        // });
+
         setList(data);
     }
 
@@ -307,7 +308,18 @@ export default function HomePage() {
                                             </section>
                                         </div>
                                         <div className="ap2-list-item-right">
-                                            <img
+                                            <NftImage
+                                                className="ap2-right-img"
+                                                onMouseEnter={() => {
+                                                    setCurrentShowImageId(item.address);
+                                                }}
+                                                onMouseLeave={() => {
+                                                    setCurrentShowImageId('');
+                                                }}
+                                                tokenId={item.tokens?.[0]?.tokenId}
+                                                contract={item.tokens?.[0]?.contract}
+                                            />
+                                            {/* <img
                                                 src={item.images?.[0]}
                                                 alt=""
                                                 className="ap2-right-img"
@@ -317,9 +329,9 @@ export default function HomePage() {
                                                 onMouseLeave={() => {
                                                     setCurrentShowImageId('');
                                                 }}
-                                            />
+                                            /> */}
                                             {currentShowImageId == item.address && (
-                                                <ImageModal images={item.images} />
+                                                <ImageModal images={item.tokens} />
                                             )}
                                         </div>
                                     </li>
@@ -427,11 +439,47 @@ const ImageModal = ({ images }) => {
     return (
         <div className="ap2-image-modal">
             <div className="ap2-image-container">
-                {images ||
-                    [].map((item) => {
-                        return <img src={item} alt="" className="ap2-image-modal-img" key={item} />;
-                    })}
+                {(images || []).map((item) => {
+                    console.log(item);
+                    return (
+                        <NftImage
+                            tokenId={item.tokenId}
+                            contract={item.contract}
+                            key={`${item.contract}-${item.tokenId}`}
+                        />
+                    );
+                })}
             </div>
         </div>
+    );
+};
+
+const fetchNftImage = async (contract, tokenId) => {
+    if (tokenId && contract) {
+        const provider = getProvider(7777777);
+        console.log(contract, tokenId);
+        return getNftMetadata(contract, tokenId, provider).then((metadata) => {
+            if (metadata) {
+                console.log(metadata, metadata.image);
+                return getAPiOrIpfsImgSrc(metadata.image);
+            }
+        });
+    }
+};
+
+const NftImage = (props: { tokenId; contract; className?; onMouseEnter?; onMouseLeave? }) => {
+    const { tokenId, contract, className, onMouseEnter, onMouseLeave } = props;
+    const { data: src } = useSWR([contract, tokenId], fetchNftImage, {
+        refreshInterval: 0,
+        refreshWhenHidden: false,
+    });
+    return (
+        <img
+            src={src || ''}
+            alt=""
+            className={className || 'ap2-image-modal-img'}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+        />
     );
 };

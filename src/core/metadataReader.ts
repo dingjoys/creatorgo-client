@@ -106,6 +106,14 @@ export const fetchAPiOrIpfsData = (uri) => {
     }
 }
 
+export const getAPiOrIpfsImgSrc= (uri)=>{
+    if (uri.startsWith("ipfs://")) {
+        return `${ipfsHead}/${uri.replace("ipfs://", "")}`
+    } else {
+        return uri
+    }
+}
+
 export const getNftMetadatas = async (contract, tokenIds: BigNumberish[], provider) => {
     return Promise.all(tokenIds.map(tokenId => getNftMetadata(contract, tokenId, provider)))
 }
