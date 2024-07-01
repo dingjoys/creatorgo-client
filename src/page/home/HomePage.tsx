@@ -28,7 +28,7 @@ const getShortAddress = (address) => `${address.substr(0, 6)}...${address.substr
 export default function HomePage() {
     const { isMobile } = useIsMobile();
     const signer = useEthersSigner();
-    const [searchText, setsearchText] = useState('');
+    const [searchText, setSearchText] = useState('');
     const [ensNameArr, setEnsNameArr] = useState<{ name: string; address: string }[]>([]);
     const [ensAvatarArr, setEnsAvatarArr] = useState<{ address: string; avatar: string }[]>([]);
     const [list, setList] = useState<
@@ -232,7 +232,7 @@ export default function HomePage() {
             <section className="artela-page-2">
                 <div className="ap2-container">
                     <div className="ap2-header">
-                        <div className="ap2-header-check">
+                        {/* <div className="ap2-header-check">
                             <Checkbox
                                 size="24px"
                                 shape="square"
@@ -242,29 +242,40 @@ export default function HomePage() {
                                 }}
                             />
                             Following
-                        </div>
+                        </div> */}
                         <div className={`ap2-search ${searchText ? 'highlight' : ''}`}>
                             <input
                                 className="ap2-search-input"
                                 value={searchText}
                                 placeholder="Search Creators"
                                 onChange={(e) => {
-                                    setsearchText(e.target?.value);
-                                    foo(e.target?.value);
+                                    setSearchText(e.target?.value);
+                                    // foo(e.target?.value);
                                 }}
                             />
-                            {!searchText ? (
-                                <IconPlus />
-                            ) : (
+                            <div
+                                    onClick={() => {
+                                        window.location.href = `/detail/${searchText}`;
+                                    }}
+                                    style={{
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    <IconPlus />
+                                </div>
+                            {/* {!searchText ? (
+                                
+                            ) 
+                            : (
                                 <IconClose
                                     style={{
                                         cursor: 'pointer',
                                     }}
                                     onClick={() => {
-                                        setsearchText('');
+                                        setSearchText('');
                                     }}
                                 />
-                            )}
+                            )} */}
                         </div>
                     </div>
 
