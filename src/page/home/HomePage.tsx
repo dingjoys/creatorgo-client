@@ -1,28 +1,22 @@
 import { ReactComponent as IconArrow } from '@/component/icons/svg/arrow-right-short.svg';
-import { ReactComponent as IconClose } from '@/component/icons/svg/close.svg';
-import { ReactComponent as IconPlus } from '@/component/icons/svg/plus.svg';
-import { ReactComponent as IconFarcaster } from '@/component/icons/svg/farcaster.svg';
 import { ReactComponent as IconDefaultAvatar } from '@/component/icons/svg/default-avatar.svg';
+import { ReactComponent as IconFarcaster } from '@/component/icons/svg/farcaster.svg';
+import { ReactComponent as IconPlus } from '@/component/icons/svg/plus.svg';
 import './HomePage.scss';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import useIsMobile from '@/core/useMobile';
-import { useEthersSigner } from '@/core/wallet/utils';
-import { useDebouncedCallback } from 'use-debounce';
 import EmptyDataHint from '@/component/EmptyDataHint';
 import MintModal from '@/component/modals/MintModal';
-import { Checkbox } from '@/component/form/Checkbox';
-import { isAddress } from 'viem';
-import { getFarcasterByAddresses, getHomeList } from '@/core/home/neynar';
-import { getAdaptiveUsername, getAdaptiveUserAvatar } from '@/utils/userUtils';
-import { formatNumberToMK } from '@/utils/numberUtils';
-import useSWR from 'swr';
-import { useAccount } from 'wagmi';
 import { fetchMyAttestion } from '@/component/modules/Menu';
-import axios from 'axios';
+import { getFarcasterByAddresses } from '@/core/home/neynar';
 import { getAPiOrIpfsImgSrc, getNftMetadata, getZoraSrc } from '@/core/metadataReader';
+import useIsMobile from '@/core/useMobile';
 import { getProvider } from '@/utils/web3Utils';
+import axios from 'axios';
+import useSWR from 'swr';
+import { useDebouncedCallback } from 'use-debounce';
+import { useAccount } from 'wagmi';
 type Address = `0x${string}`;
 const defaultAvatar =
     'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png';
@@ -180,8 +174,7 @@ export default function HomePage() {
             refreshWhenHidden: false,
         },
     );
-    console.log(myAttestation,myAttestation.length)
-
+    
     return (
         <div className={`artela-page ${isMobile ? 'is-mobile' : ''}`}>
             <section className="artela-page-1">

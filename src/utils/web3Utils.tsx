@@ -51,15 +51,6 @@ export const signTypedData = async (message, types, domain, signer: Signer) => {
     return { address, sig, data };
 };
 
-export const signTypedDataFromWagmi = async (message, types, domain) => {
-    // let address = utils.getAddress(await signer.getAddress());
-    // message.from = address;
-    // if (!message.timestamp) message.timestamp = parseInt((Date.now() / 1e3).toFixed());
-
-    const data: any = { domain, types, message };
-    const sig = await WagmiSignTypedData({ domain, types: data.types, value: message });
-    return { address: message.from, sig, data };
-};
 
 export const getContract = (contractAddress, abi, providerOrSigner: Signer | Provider) => {
     return new ethers.Contract(contractAddress, abi, providerOrSigner);
