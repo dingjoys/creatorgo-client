@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './index.scss';
+import { ReactComponent as IconArrowRight } from '@/component/icons/svg/arrow.svg';
+
 import { ReactComponent as IconClose } from '@/component/icons/svg/close-border.svg';
 import { ReactComponent as IconBadge1 } from '@/component/icons/svg/badge1.svg';
 import { ReactComponent as IconBadge2 } from '@/component/icons/svg/badge2.svg';
 import MyGraph from './MyGraph';
 import { useParams } from 'react-router-dom';
+import { useScrollBar } from '@/page/Detail/util';
 import { getCreatorData, CreatorDetail, CollectionItem } from '@/core/home/neynar';
 import { getProfile } from '@/core/home/user';
 import { formatPrice } from '@/utils/numberUtils';
@@ -213,7 +216,7 @@ export default function Detail() {
                 );
                 console.log('topMinters', recentMintsTokenInfos.current, token);
                 return {
-                    imageSrc: token?.metadata?.image || defaultAvatar,
+                    imageSrc: token?.metadata?.image,
                     title: `${token?.metadata?.name} #${item.token_id}`,
                     mintedBy: item.minter,
                     blockNumber: item.block_number,
@@ -236,7 +239,7 @@ export default function Detail() {
                     ? collectionMetadata?.image
                     : tokenMedata?.metadata?.image;
                 return {
-                    src: src || defaultAvatar,
+                    src: src,
                     title: title,
                 };
             }) || []
@@ -286,11 +289,15 @@ export default function Detail() {
             return blockMap[block_number];
         }
 
-        const block = await getBlock(wagmiConfig, { blockNumber: BigInt(block_number) });
+        const block = await getBlock(wagmiConfig, {
+            blockNumber: BigInt(block_number),
+        });
         blockMap[block_number] = block;
         setblockMap({ ...blockMap });
         return block;
     };
+
+    const { canPrev, canNext, scrollBar } = useScrollBar('rc-scrollbar-wrapper', 'rc-scrollbar');
     return (
         <div className="detail-wrapper">
             <div className="detail-side-bar">
@@ -415,7 +422,7 @@ export default function Detail() {
                                 </div>
                             </section>
                         </div>
-                        <div>
+                        {/* <div>
                             <div className="di-title">
                                 Farcaster minters
                                 <div className="di-subtitle">Top minters</div>
@@ -432,7 +439,7 @@ export default function Detail() {
                                     />
                                 ))}
                             </div>
-                        </div>
+                        </div> */}
                         <div>
                             <div className="di-title">Mint history</div>
                             <section className="nft-wrapper">
@@ -462,20 +469,56 @@ export default function Detail() {
             ) : (
                 <div className="detail-collection">
                     <section className="detail-image-gallery">
-                        {galleryData.map((item, index) => (
-                            <GalleryItem
-                                title={item.title}
-                                key={index}
-                                src={item.src}
-                                clean={() => {
-                                    setselectedGallery(-1);
-                                }}
-                                setSelected={() => {
-                                    setselectedGallery(index);
-                                }}
-                                isSelected={selectedGallery == index}
-                            />
-                        ))}
+                        <div className="explore-scrollbar-wrapper">
+                            {canPrev ? (
+                                <div
+                                    className="explore-scrollbar-prev"
+                                    onClick={() => {
+                                        scrollBar('prev');
+                                    }}
+                                >
+                                    <IconArrowRight
+                                        width="16px"
+                                        style={{
+                                            transform: 'rotate(90deg)',
+                                        }}
+                                    />
+                                </div>
+                            ) : null}
+                            {canNext ? (
+                                <div
+                                    className="explore-scrollbar-next"
+                                    onClick={() => {
+                                        scrollBar('next');
+                                    }}
+                                >
+                                    <IconArrowRight
+                                        width="16px"
+                                        style={{
+                                            transform: 'rotate(-90deg)',
+                                        }}
+                                    />
+                                </div>
+                            ) : null}
+                        </div>
+                        <div className="detail-image-gallery-warpper" id="rc-scrollbar-wrapper">
+                            <div id="rc-scrollbar" className="detail-image-gallery-inner">
+                                {galleryData.map((item, index) => (
+                                    <GalleryItem
+                                        title={item.title}
+                                        key={index}
+                                        src={item.src}
+                                        clean={() => {
+                                            setselectedGallery(-1);
+                                        }}
+                                        setSelected={() => {
+                                            setselectedGallery(index);
+                                        }}
+                                        isSelected={selectedGallery == index}
+                                    />
+                                ))}
+                            </div>
+                        </div>
                     </section>
                     <section className="detail-collection-list">
                         {galleryImages.map((item, index) => (
