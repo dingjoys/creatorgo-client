@@ -124,88 +124,113 @@ const NodeSlot: React.FC<RGNodeSlotProps> = ({ node }) => {
         </div>
     );
 };
-const MyGraph = ({ collections, creatorName }: { collections: CollectionItem[]; creatorName }) => {
+const MyGraph = ({
+    collections,
+    creatorName,
+    collectionMetadataMap,
+    tokenMetadatas,
+}: {
+    tokenMetadatas;
+    collectionMetadataMap;
+    collections: CollectionItem[];
+    creatorName;
+}) => {
     const graphRef = useRef() as MutableRefObject<RelationGraphExpose>;
     const totalTokens = useMemo(() => {
         return collections.reduce((arr, item) => {
-            arr = arr.concat(
-                item.tokens.map((token) => ({
-                    ...token,
-                    collectionMetadata: item.metadata,
-                    mintfun: item.mintfun,
-                })),
+            const collectionMedata = collectionMetadataMap[item.contract];
+            const targetToken = item.tokens[0];
+            const tokenMetadata = tokenMetadatas?.find(
+                (t) => t.contract == item.contract && t.tokenId == targetToken.tokenId,
             );
-
+            arr.push({
+                ...targetToken,
+                ...(tokenMetadata || {}),
+                collectionMetadata: collectionMedata,
+                mintfun: item.mintfun,
+            });
             return arr;
         }, []);
-    }, [collections]);
-    const staticJsonData = {
-        rootId: '0',
-        nodes: [
-            {
-                id: '0',
-                text: creatorName,
-            },
-        ]
-            .concat(
-                totalTokens.map((item, index) => {
-                    let avatar = item.metadata?.image;
+    }, [collections, collectionMetadataMap, tokenMetadatas]);
+    const staticJsonData = useMemo(() => {
+        return {
+            rootId: '0',
+            nodes: [
+                {
+                    id: '0',
+                    text: creatorName,
+                },
+            ]
+                .concat(
+                    totalTokens.map((item, index) => {
+                        let avatar = item.metadata?.image;
 
-                    let name = item.metadata?.name;
+                        let name = item.metadata?.name;
+                        console.log('item.metadata', name);
 
-                    const hash = avatar?.split('ipfs://')?.[1];
-                    if (hash) {
-                        avatar = `https://metopia.quicknode-ipfs.com/ipfs/${hash}`;
-                    }
-                    return {
-                        id: String(index + 1),
-                        text: 'node',
-                        data: {
-                            mintProfile: item.mintfun?.profiles,
-                            minterDetail: item.mintfun?.details,
-                            name,
-                            collectionMetadata: item.collectionMetadata,
-                            image: avatar || defaultAvatar,
-                            imageWidth: 200 * (Math.random() * 0.5) + 'px',
-                        },
-                    };
-                }),
-            )
-            .concat(
-                totalTokens.map((item, index) => {
-                    const minter = item.mintfun?.profiles?.[0]?.name;
-                    return {
-                        id: `sub-${String(index + 1)}`,
-                        text: minter,
-                    };
-                }),
-            ),
-        lines: collections
-            ?.map((item, index) => {
-                return { from: '0', to: String(index + 1), text: '' };
-            })
-            .concat(
-                collections?.map((item, index) => {
-                    return {
-                        from: String(index + 1),
-                        to: `sub-${String(index + 1)}`,
-                        text: 'line',
-                    };
-                }),
-            ),
-    };
+                        const hash = avatar?.split('ipfs://')?.[1];
+                        if (hash) {
+                            avatar = `https://metopia.quicknode-ipfs.com/ipfs/${hash}`;
+                        }
+                        const imageWidthRandom = Math.min(300 * Math.random(), 150);
 
-    console.log('staticJsonData', staticJsonData);
+                        return {
+                            id: String(index + 1),
+                            text: 'node',
+                            data: {
+                                mintProfile: item.mintfun?.profiles,
+                                minterDetail: item.mintfun?.details,
+                                name,
+                                collectionMetadata: item.collectionMetadata,
+                                image: avatar || defaultAvatar,
+                                imageWidth: imageWidthRandom + 'px',
+                            },
+                        };
+                    }),
+                )
+                .concat(
+                    totalTokens.map((item, index) => {
+                        const minter = item.mintfun?.profiles?.[0]?.name;
+                        return {
+                            id: `sub-${String(index + 1)}`,
+                            text: minter,
+                        };
+                    }),
+                ),
+            lines: collections
+                ?.map((item, index) => {
+                    return { from: '0', to: String(index + 1), text: '' };
+                })
+                .concat(
+                    collections?.map((item, index) => {
+                        return {
+                            from: String(index + 1),
+                            to: `sub-${String(index + 1)}`,
+                            text: 'mint by',
+                        };
+                    }),
+                ),
+        };
+    }, [collections, totalTokens, creatorName]);
     useEffect(() => {
-        if (collections?.length) {
+        // console.log(
+        //     'effect',
+        //     collections?.length,
+        //     tokenMetadatas.length,
+        //     Object.keys(collectionMetadataMap)?.length,
+        // );
+        if (
+            collections?.length &&
+            collections.length == Object.keys(collectionMetadataMap)?.length
+        ) {
             showGraph();
         }
-    }, [collections]);
+    }, [collections, tokenMetadatas, collectionMetadataMap]);
     const showGraph = async () => {
         await graphRef.current.setJsonData(staticJsonData, (graphInstance) => {});
         const graphInstance = graphRef.current?.getInstance();
         if (graphInstance) {
-            await graphInstance.setZoom(66);
+            await graphInstance.setZoom(96);
         }
     };
     const options: RGOptions = {
@@ -229,6 +254,7 @@ const MyGraph = ({ collections, creatorName }: { collections: CollectionItem[]; 
         layout: {
             layoutName: 'center',
             maxLayoutTimes: 3000,
+            levelDistance: '200, 100',
             layoutClassName: 'seeks-layout-force',
         },
         defaultExpandHolderPosition: 'right',
@@ -265,6 +291,7 @@ const MyGraph = ({ collections, creatorName }: { collections: CollectionItem[]; 
                     try {
                         node = JSON.parse(content);
                     } catch (e) {}
+                    console.log('node', node);
                     const avatar = node?.image;
                     const name = node?.name;
                     const profiles = node?.mintProfile || [];
@@ -278,7 +305,7 @@ const MyGraph = ({ collections, creatorName }: { collections: CollectionItem[]; 
                             <div className="tooltip-header">
                                 <IpfsImage src={avatar} className="tooltip-header-img" />
                                 <div>
-                                    <div className="tooltip-header-name">{name | 'name'}</div>
+                                    <div className="tooltip-header-name">{name || 'name'}</div>
                                     <div className="tooltip-header-date">
                                         25/06/2024
                                         <span className="tooltip-header-line"></span>

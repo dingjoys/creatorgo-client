@@ -69,6 +69,7 @@
 
                 img {
                     width: 100%;
+                    height: 100%;
                 }
             }
         }
@@ -154,6 +155,8 @@
     .diu-profile-name {
         margin: 0;
         color: #fff;
+        max-width: 120px;
+        @include ellipsis(1);
         font-family: Poppins;
         font-size: 24px;
         font-style: normal;

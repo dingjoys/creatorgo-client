@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './index.scss';
 import { ReactComponent as IconClose } from '@/component/icons/svg/close-border.svg';
 import { ReactComponent as IconBadge1 } from '@/component/icons/svg/badge1.svg';
 import { ReactComponent as IconBadge2 } from '@/component/icons/svg/badge2.svg';
 import MyGraph from './MyGraph';
 import { useParams } from 'react-router-dom';
-import { getCreatorData, CreatorDetail } from '@/core/home/neynar';
+import { getCreatorData, CreatorDetail, CollectionItem } from '@/core/home/neynar';
 import { getProfile } from '@/core/home/user';
 import { formatPrice } from '@/utils/numberUtils';
 import moment from 'moment';
@@ -13,6 +13,8 @@ import { getTopMinters } from '@/core/home/minters';
 import { getBlock } from 'wagmi/actions';
 import wagmiConfig from '@/walletConfig';
 import IpfsImage from '@/component/IpfsImage';
+import { getContractMetadata, getNftMetadata } from '@/core/metadataReader';
+import { getProvider } from '@/utils/web3Utils';
 const defaultAvatar =
     'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/default-user-avatar-square.png';
 const zoraChain = 'https://metopia.oss-cn-hongkong.aliyuncs.com/imgs/creatorgo/zora.png';
@@ -35,6 +37,9 @@ export default function Detail() {
         // fetchTopMinters(owner);
     }, [owner]);
 
+    const [collectionMetadataMap, setcollectionMetadataMap] = useState({});
+    const tokenInfos = useRef<{ contract; tokenId; metadata; total_amount }[]>([]);
+    // const [tokenInfos, setTokenInfos] = useState([]);
     const [creatorData, setCreatorData] = useState<CreatorDetail>();
     async function fetchCreatorData(owner) {
         if (!owner) return;
@@ -42,6 +47,11 @@ export default function Detail() {
         setCreatorData(data);
         if (data?.firstMintBlockNumber) {
             getBlockInfo(data?.firstMintBlockNumber);
+        }
+        if (data?.collections?.length) {
+            getMyGraphTokenMetadata(data?.collections);
+            getCollectionMetadata(data?.collections);
+            getAllTokenMetadata(data?.collections);
         }
         const userInfo = data?.zora;
         setUser({
@@ -56,14 +66,96 @@ export default function Detail() {
             followers: userInfo?.totalFollowers,
             following: userInfo?.totalFollowing,
         });
-        settopMinters(data?.recentMints);
-        data?.recentMints?.forEach((item) => {
-            if (item.block_number) {
-                getBlockInfo(item.block_number);
-            }
-        });
+        if (data?.recentMints?.length) {
+            getRecentMintMetadata(data?.recentMints);
+            settopMinters(data?.recentMints);
+            data?.recentMints?.forEach((item) => {
+                if (item.block_number) {
+                    getBlockInfo(item.block_number);
+                }
+            });
+        }
     }
+    console.log('tokenInfos', tokenInfos);
     const [topMinters, settopMinters] = useState([]);
+
+    async function getAllTokenMetadata(collections: CollectionItem[]) {
+        const provider = getProvider(7777777);
+
+        for (let collection of collections) {
+            for (let token of collection.tokens) {
+                const metadata = await getNftMetadata(collection.contract, token.tokenId, provider);
+                console.log(collection.contract, token.tokenId);
+                tokenInfos.current = tokenInfos.current
+                    .filter((i) => {
+                        return i.contract != collection.contract || i.tokenId != token.tokenId;
+                    })
+                    .concat([
+                        {
+                            contract: collection.contract,
+                            tokenId: token.tokenId,
+                            total_amount: token.total_amount,
+                            metadata,
+                        },
+                    ]);
+            }
+        }
+    }
+    const myGraphtokenInfos = useRef<{ contract; tokenId; metadata; total_amount }[]>([]);
+
+    async function getMyGraphTokenMetadata(collections: CollectionItem[]) {
+        const provider = getProvider(7777777);
+
+        for (let collection of collections) {
+            const token = collection.tokens[0];
+
+            const metadata = await getNftMetadata(collection.contract, token.tokenId, provider);
+            console.log(collection.contract, token.tokenId);
+            myGraphtokenInfos.current = myGraphtokenInfos.current
+                .filter((i) => {
+                    return i.contract != collection.contract || i.tokenId != token.tokenId;
+                })
+                .concat([
+                    {
+                        contract: collection.contract,
+                        tokenId: token.tokenId,
+                        total_amount: token.total_amount,
+                        metadata,
+                    },
+                ]);
+        }
+    }
+
+    const recentMintsTokenInfos = useRef<{ contract; tokenId; metadata }[]>([]);
+    async function getRecentMintMetadata(recentMints: { contract: string; token_id: string }[]) {
+        const provider = getProvider(7777777);
+
+        for (let token of recentMints) {
+            const metadata = await getNftMetadata(token.contract, token.token_id, provider);
+            recentMintsTokenInfos.current = recentMintsTokenInfos.current
+                .filter((i) => {
+                    return i.contract != token.contract || i.tokenId != token.token_id;
+                })
+                .concat([
+                    {
+                        contract: token.contract,
+                        tokenId: token.token_id,
+                        metadata,
+                    },
+                ]);
+        }
+    }
+
+    async function getCollectionMetadata(collections: CollectionItem[]) {
+        const provider = getProvider(7777777);
+
+        for (let collection of collections) {
+            const metadata = await getContractMetadata(collection.contract, provider);
+            collectionMetadataMap[collection.contract] = metadata;
+            console.log('collectionMetadataMap');
+            setcollectionMetadataMap({ ...collectionMetadataMap });
+        }
+    }
     // async function fetchTopMinters(owner) {
     //     if (!owner) return;
     //     const data = await getTopMinters(owner);
@@ -101,8 +193,8 @@ export default function Detail() {
                 (token) => token.contract == item.contract && token.tokenId == item.token_id,
             );
             return {
-                avatarSrc: token?.img?.image || defaultAvatar,
-                username: token?.img?.name,
+                avatarSrc: token?.metadata?.image || defaultAvatar,
+                username: token?.metadata?.name,
                 itemCount: item?.total_amount,
                 isBadge1: false,
                 isBadge2: false,
@@ -112,84 +204,82 @@ export default function Detail() {
     }, [topMinters, creatorData?.collections]);
 
     const nftData = useMemo<NFTCardProps[]>(() => {
-        const totalTokens = creatorData?.collections?.reduce((arr, item) => {
-            arr = arr.concat(item.tokens);
-            return arr;
-        }, []);
         return (
             topMinters?.map((item) => {
-                const token = totalTokens?.find(
+                const token = recentMintsTokenInfos?.current.find(
                     (token) =>
                         token.contract == item.contract &&
                         Number(token.tokenId) == Number(item.token_id),
                 );
+                console.log('topMinters', recentMintsTokenInfos.current, token);
                 return {
-                    imageSrc: token?.img?.image || defaultAvatar,
-                    title: `${token?.img?.name} #${item.token_id}`,
+                    imageSrc: token?.metadata?.image || defaultAvatar,
+                    title: `${token?.metadata?.name} #${item.token_id}`,
                     mintedBy: item.minter,
                     blockNumber: item.block_number,
                 };
             }) || []
         );
-    }, [topMinters, creatorData?.collections]);
+    }, [topMinters, recentMintsTokenInfos.current]);
 
     const galleryData = useMemo(() => {
         return (
             creatorData?.collections?.map((item) => {
-                const title = item.metadata?.name
-                    ? item.metadata?.name
-                    : item.tokens?.[0]?.img?.name;
-                const src = item.metadata?.image
-                    ? item.metadata?.image
-                    : item.tokens?.[0]?.img?.image;
+                const collectionMetadata = collectionMetadataMap[item.contract];
+                const tokenMedata = tokenInfos.current.find(
+                    (token) => token.contract === item.contract,
+                );
+                const title = collectionMetadata?.name
+                    ? collectionMetadata?.name
+                    : tokenMedata?.metadata?.name;
+                const src = collectionMetadata?.image
+                    ? collectionMetadata?.image
+                    : tokenMedata?.metadata?.image;
                 return {
                     src: src || defaultAvatar,
                     title: title,
                 };
             }) || []
         );
-    }, [creatorData?.collections]);
+    }, [creatorData?.collections, tokenInfos.current, collectionMetadataMap]);
 
     const [selectedGallery, setselectedGallery] = useState(-1);
     const galleryImages = useMemo(() => {
         if (selectedGallery == -1) {
             return (
-                creatorData?.collections
-                    ?.reduce((arr, item) => {
-                        arr = arr.concat(
-                            item.tokens.map((token) => ({
-                                ...token,
-                                collectioMetadata: item.metadata,
-                            })),
-                        );
-                        return arr;
-                    }, [])
-                    ?.map((item) => {
-                        return {
-                            image: item?.img?.image || defaultAvatar,
-                            title: item?.img?.name || 'title',
-                            chainIcon: zoraChain,
-                            authorAvatar: item.collectioMetadata?.image || defaultAvatar,
-                            authorName: item.collectioMetadata?.name,
-                            mintedCount: item.total_amount,
-                        };
-                    }) || []
+                tokenInfos.current?.map((item) => {
+                    const collectioMetadata = collectionMetadataMap[item.contract];
+                    return {
+                        image: item?.metadata?.image || defaultAvatar,
+                        title: item?.metadata?.name || 'title',
+                        chainIcon: zoraChain,
+                        authorAvatar: collectioMetadata?.image || defaultAvatar,
+                        authorName: collectioMetadata?.name,
+                        mintedCount: item.total_amount,
+                    };
+                }) || []
             );
         }
+        console.log('tokenInfos', tokenInfos);
         return (
-            creatorData?.collections?.[selectedGallery]?.tokens?.map((item) => {
-                const collection = creatorData?.collections?.[selectedGallery];
-                return {
-                    image: item?.img?.image || defaultAvatar,
-                    title: item?.img?.name || 'title',
-                    chainIcon: zoraChain,
-                    authorAvatar: collection?.metadata?.image,
-                    authorName: collection?.metadata?.name,
-                    mintedCount: item.total_amount,
-                };
-            }) || []
+            tokenInfos.current
+                .filter(
+                    (item) =>
+                        creatorData?.collections?.[selectedGallery]?.contract === item.contract,
+                )
+                ?.map((item) => {
+                    const collectioMetadata = collectionMetadataMap[item.contract];
+                    return {
+                        image: item?.metadata?.image || defaultAvatar,
+                        title: item?.metadata?.name || 'title',
+                        chainIcon: zoraChain,
+                        authorAvatar: collectioMetadata?.image,
+                        authorName: collectioMetadata?.name,
+                        mintedCount: item.total_amount,
+                    };
+                }) || []
         );
-    }, [creatorData?.collections, selectedGallery]);
+    }, [tokenInfos.current, selectedGallery, creatorData?.collections, collectionMetadataMap]);
 
     const getBlockInfo = async (block_number: number) => {
         if (blockMap[block_number]) {
@@ -363,6 +453,8 @@ export default function Detail() {
                         <div className="dc-title">Creator onchain trajectory</div>
                         <MyGraph
                             collections={creatorData?.collections || []}
+                            collectionMetadataMap={collectionMetadataMap}
+                            tokenMetadatas={myGraphtokenInfos.current}
                             creatorName={user?.name}
                         />
                     </div>

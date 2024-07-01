@@ -29,6 +29,7 @@ export interface CollectionItem {
         name: string;
         image: string;
     };
+    contract: string;
     tokens: {
         contract: string;
         // '0x00001867c25946a43abd9baed115fcc4bcbb37bb';
